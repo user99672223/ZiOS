@@ -1,0 +1,22 @@
+[package]
+name = "zed_ios"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+workspace = "../../zed"
+
+[lib]
+path = "src/zed_ios.rs"
+doctest = false
+
+[dependencies]
+anyhow.workspace = true
+gpui.workspace = true
+ios_bridge.workspace = true
+log.workspace = true
+workspace.workspace = true
+zlog.workspace = true
+
+[target.'cfg(target_os = "ios")'.dependencies]
+objc2.workspace = true
+objc2-ui-kit.workspace = true

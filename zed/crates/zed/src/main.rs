@@ -84,6 +84,31 @@ use crate::zed::{CrashHandler, OpenRequestKind, eager_load_active_theme_and_icon
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
+#[cfg(target_os = "ios")]
+mod ios {
+    /// Logging, crash records, and strict Simulator mode for the iOS app.
+    /// Replaces the desktop zlog setup: `ios_bridge` points zlog at the
+    /// container's log folder, mirrors records to os_log, and records panics.
+    pub fn init() {
+        if let Err(error) = ios_bridge::logging::init() {
+            eprintln!("logging unavailable: {error:#}");
+        }
+        let strict = ios_bridge::strict::StrictConfig::from_env();
+        log::info!(
+            "iOS: strict mode {}, interposer loaded: {}, {strict:?}",
+            if ios_bridge::strict::ENABLED { "on" } else { "off" },
+            ios_bridge::strict::interposer_loaded()
+        );
+        ios_bridge::jit::start_monitor(strict.force_jit, std::time::Duration::from_secs(5));
+        if let Some(cap) = strict.memory_cap_mb {
+            ios_bridge::memory::start_watchdog(
+                cap * 1024 * 1024,
+                std::time::Duration::from_millis(250),
+            );
+        }
+    }
+}
+
 fn build_application() -> Application {
     let platform = gpui_platform::current_platform(false);
     if std::env::var("ZED_EXPERIMENTAL_A11Y").as_deref() == Ok("1") {
@@ -286,16 +311,21 @@ fn main() {
         return;
     }
 
-    zlog::init();
+    #[cfg(target_os = "ios")]
+    ios::init();
+    #[cfg(not(target_os = "ios"))]
+    {
+        zlog::init();
 
-    if stdout_is_a_pty() {
-        zlog::init_output_stdout();
-    } else {
-        let result = zlog::init_output_file(paths::log_file(), Some(paths::old_log_file()));
-        if let Err(err) = result {
-            eprintln!("Could not open log file: {}... Defaulting to stdout", err);
+        if stdout_is_a_pty() {
             zlog::init_output_stdout();
-        };
+        } else {
+            let result = zlog::init_output_file(paths::log_file(), Some(paths::old_log_file()));
+            if let Err(err) = result {
+                eprintln!("Could not open log file: {}... Defaulting to stdout", err);
+                zlog::init_output_stdout();
+            };
+        }
     }
     ztracing::init();
 
@@ -377,6 +407,12 @@ fn main() {
             use zed::mac_only_instance::*;
             ensure_only_instance() != IsOnlyInstance::Yes
         }
+
+        // UIKit guarantees a single instance; there is no CLI to listen for.
+        #[cfg(target_os = "ios")]
+        {
+            false
+        }
     };
     if failed_single_instance_check {
         println!("zed is already running");
@@ -441,7 +477,9 @@ fn main() {
     );
 
     let (shell_env_loaded_tx, shell_env_loaded_rx) = oneshot::channel();
-    if !stdout_is_a_pty() {
+    // Loading the login shell's environment starts a shell process, which iOS
+    // forbids; the app's environment is already complete there.
+    if !stdout_is_a_pty() && !cfg!(target_os = "ios") {
         app.background_executor()
             .spawn(async {
                 #[cfg(unix)]
@@ -535,7 +573,8 @@ fn main() {
             let options = NodeBinaryOptions {
                 allow_path_lookup: !settings.ignore_system_version,
                 // TODO: Expose this setting
-                allow_binary_download: true,
+                // iOS never downloads executables; Node is bundled in-process.
+                allow_binary_download: !cfg!(target_os = "ios"),
                 use_paths: settings.path.as_ref().map(|node_path| {
                     let node_path = PathBuf::from(shellexpand::tilde(node_path).as_ref());
                     let npm_path = settings
@@ -655,8 +694,11 @@ fn main() {
         AppState::set_global(app_state.clone(), cx);
 
         watcher_debug::init(app_state.clone(), cx);
+        // Updates arrive through SideStore on iOS.
+        #[cfg(not(target_os = "ios"))]
         auto_update::init(client.clone(), cx);
         dap_adapters::init(cx);
+        #[cfg(not(target_os = "ios"))]
         auto_update_ui::init(cx);
         reliability::init(client.clone(), app_state.workspace_store.clone(), cx);
         extension_host::init(
@@ -873,6 +915,8 @@ fn main() {
         }
 
         initialize_workspace(app_state.clone(), cx);
+        #[cfg(target_os = "ios")]
+        zed_ios::init(app_state.clone(), cx);
 
         cx.activate(true);
 

@@ -51,6 +51,14 @@ impl RustLspAdapter {
     const ARCH_SERVER_NAME: &str = "apple-darwin";
 }
 
+// No binaries are downloaded on iOS (servers run in-process); the Darwin
+// names keep the shared download code compiling.
+#[cfg(target_os = "ios")]
+impl RustLspAdapter {
+    const GITHUB_ASSET_KIND: AssetKind = AssetKind::Gz;
+    const ARCH_SERVER_NAME: &str = "apple-darwin";
+}
+
 #[cfg(target_os = "linux")]
 impl RustLspAdapter {
     const GITHUB_ASSET_KIND: AssetKind = AssetKind::Gz;

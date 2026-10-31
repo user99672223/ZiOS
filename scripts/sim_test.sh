@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Runs the strict Simulator test pass (CLAUDE.md sections 12 and 12a).
 #
-#   scripts/sim_test.sh <path/to/ZiOS.app> <output directory>
+#   scripts/sim_test.sh <path/to/ZiOS.app> <output directory> [zed|gpui]
+#
+# `zed` (default) drives the full editor; `gpui` drives the GPUI smoke app
+# (crates/zios_app).
 #
 # Every scenario runs twice: with ZED_IOS_FORCE_JIT=off and =on. Screenshots,
 # logs, and console output land in the output directory.
@@ -9,6 +12,7 @@ set -euo pipefail
 
 app="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
 output="$2"
+scenario="${3:-zed}"
 mkdir -p "$output"
 output="$(cd "$output" && pwd)"
 bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Info.plist")"
@@ -92,32 +96,92 @@ screenshot() {
 
 is_running() { kill -0 "$1" 2>/dev/null; }
 
-for jit in off on; do
-    if [[ "$jit" == off ]]; then cap=3072; else cap=4096; fi
-    log "pass: ZED_IOS_FORCE_JIT=$jit, ZED_IOS_MEMORY_CAP_MB=$cap"
+gpui_scenario() {
+    for jit in off on; do
+        if [[ "$jit" == off ]]; then cap=3072; else cap=4096; fi
+        log "pass: ZED_IOS_FORCE_JIT=$jit, ZED_IOS_MEMORY_CAP_MB=$cap"
+        pid="$(launch "gpui-jit-$jit" "wait:4000;type:hello zed;key:cmd-s;wait:500;mark:main;memory_warning;wait:2000;mark:after_memory_warning" \
+            ZED_IOS_FORCE_JIT="$jit" ZED_IOS_MEMORY_CAP_MB="$cap")"
+        if wait_for_mark main; then
+            screenshot "gpui-jit-$jit"
+        else
+            fail "jit=$jit: app never reached the main mark"
+        fi
+        if wait_for_mark after_memory_warning 30; then
+            is_running "$pid" || fail "jit=$jit: app died after a memory warning"
+            grep -q "memory warning (System)" "$logs/Zed.log" ||
+                fail "jit=$jit: UIKit memory warning did not reach the app"
+        else
+            fail "jit=$jit: app did not survive the memory warning"
+        fi
+        grep -q "interposer loaded: true" "$logs/Zed.log" || fail "jit=$jit: strict interposer not loaded"
+        grep -q "key down: cmd-s" "$logs/Zed.log" || fail "jit=$jit: keystrokes did not reach the view"
+        grep -q "force_jit: $(tr '[:lower:]' '[:upper:]' <<< "${jit:0:1}")${jit:1}" "$logs/Zed.log" ||
+            fail "jit=$jit: ZED_IOS_FORCE_JIT was not applied"
+        save_logs "gpui-jit-$jit"
+    done
+}
 
-    # Main scenario: render, take a screenshot, survive a real UIKit memory warning.
-    pid="$(launch "main-jit-$jit" "wait:4000;type:hello zed;key:cmd-s;wait:500;mark:main;memory_warning;wait:2000;mark:after_memory_warning" \
-        ZED_IOS_FORCE_JIT="$jit" ZED_IOS_MEMORY_CAP_MB="$cap")"
-    if wait_for_mark main; then
-        screenshot "main-jit-$jit"
+zed_scenario() {
+    documents="$container/Documents"
+    edited_file="$documents/demo/src/main.rs"
+    edit_marker="// edited on iPhone"
+
+    for jit in off on; do
+        if [[ "$jit" == off ]]; then cap=3072; else cap=4096; fi
+        log "pass: ZED_IOS_FORCE_JIT=$jit, ZED_IOS_MEMORY_CAP_MB=$cap"
+
+        # Zed launches, opens a folder and a file, edits and saves it, and survives a
+        # real UIKit memory warning.
+        script="wait:8000;mark:launched;seed_project;open:demo;wait:6000;mark:workspace"
+        script+=";open:demo/src/main.rs;wait:4000;type:$edit_marker;key:enter;key:cmd-s;wait:3000;mark:edited"
+        script+=";memory_warning;wait:3000;mark:after_memory_warning"
+        pid="$(launch "main-jit-$jit" "$script" ZED_IOS_FORCE_JIT="$jit" ZED_IOS_MEMORY_CAP_MB="$cap")"
+        for mark in launched workspace edited; do
+            if wait_for_mark "$mark" 120; then
+                screenshot "$mark-jit-$jit"
+            else
+                fail "jit=$jit: app never reached the $mark mark"
+                break
+            fi
+        done
+        if grep -q "^failed:" "$logs/ci-marks.txt" 2>/dev/null; then
+            fail "jit=$jit: CI steps failed: $(grep '^failed:' "$logs/ci-marks.txt" | tr '\n' ' ')"
+        fi
+        if head -1 "$edited_file" 2>/dev/null | grep -qF "$edit_marker"; then
+            echo "edit saved to disk: $(head -1 "$edited_file")"
+        else
+            fail "jit=$jit: the edit was not saved ($(head -1 "$edited_file" 2>/dev/null))"
+        fi
+        if wait_for_mark after_memory_warning 30; then
+            is_running "$pid" || fail "jit=$jit: app died after a memory warning"
+            grep -q "memory warning (System)" "$logs/Zed.log" ||
+                fail "jit=$jit: UIKit memory warning did not reach the app"
+        else
+            fail "jit=$jit: app did not survive the memory warning"
+        fi
+        grep -q "interposer loaded: true" "$logs/Zed.log" || fail "jit=$jit: strict interposer not loaded"
+        grep -q "force_jit: $(tr '[:lower:]' '[:upper:]' <<< "${jit:0:1}")${jit:1}" "$logs/Zed.log" ||
+            fail "jit=$jit: ZED_IOS_FORCE_JIT was not applied"
+        save_logs "main-jit-$jit"
+    done
+
+    log "session restore: relaunch reopens the previous workspace"
+    pid="$(launch restore "wait:10000;mark:restored")"
+    if wait_for_mark restored 120; then
+        screenshot restored
+        is_running "$pid" || fail "restore: app is not running"
     else
-        fail "jit=$jit: app never reached the main mark"
+        fail "restore: app never reached the restored mark"
     fi
-    if wait_for_mark after_memory_warning 30; then
-        is_running "$pid" || fail "jit=$jit: app died after a memory warning"
-        grep -q "memory warning (System)" "$logs/Zed.log" ||
-            fail "jit=$jit: UIKit memory warning did not reach the app"
-        screenshot "after-memory-warning-jit-$jit"
-    else
-        fail "jit=$jit: app did not survive the memory warning"
-    fi
-    grep -q "strict interposer loaded: true" "$logs/Zed.log" || fail "jit=$jit: strict interposer not loaded"
-    grep -q "key down: cmd-s" "$logs/Zed.log" || fail "jit=$jit: keystrokes did not reach the view"
-    grep -q "force_jit: $(tr '[:lower:]' '[:upper:]' <<< "${jit:0:1}")${jit:1}" "$logs/Zed.log" ||
-        fail "jit=$jit: ZED_IOS_FORCE_JIT was not applied"
-    save_logs "main-jit-$jit"
-done
+    save_logs restore
+}
+
+case "$scenario" in
+    zed) zed_scenario ;;
+    gpui) gpui_scenario ;;
+    *) echo "unknown scenario $scenario" >&2; exit 2 ;;
+esac
 
 log "strict mode: process spawning must abort the app"
 pid="$(launch spawn-test "wait:2000;spawn_test")"

@@ -203,7 +203,11 @@ static int zios_path_is_forbidden(const char *path) {
     int allowed = 0;
     pthread_mutex_lock(&zios_roots_lock);
     for (int index = 0; index < zios_root_count; index++) {
-        if (zios_has_prefix(path, zios_roots[index])) {
+        // Inside an allowed root, or one of its ancestors: Foundation resolves
+        // symlinks by lstat-ing every parent of the bundle and container paths,
+        // which the device sandbox also permits.
+        if (zios_has_prefix(path, zios_roots[index]) ||
+            zios_has_prefix(zios_roots[index], path)) {
             allowed = 1;
             break;
         }

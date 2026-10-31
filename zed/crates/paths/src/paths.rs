@@ -145,7 +145,9 @@ pub fn data_dir() -> &'static PathBuf {
     CURRENT_DATA_DIR.get_or_init(|| {
         if let Some(custom_dir) = CUSTOM_DATA_DIR.get() {
             custom_dir.clone()
-        } else if cfg!(target_os = "macos") {
+        } else if cfg!(any(target_os = "macos", target_os = "ios")) {
+            // On iOS `HOME` is the app's data container, so this lands in the
+            // container's Library folder, which is backed up and not user-visible.
             home_dir()
                 .join("Library/Application Support")
                 .join(APP_NAME)
@@ -199,6 +201,10 @@ pub fn temp_dir() -> &'static PathBuf {
                 .join(APP_NAME);
         }
 
+        if cfg!(target_os = "ios") {
+            return home_dir().join("Library/Caches").join(APP_NAME);
+        }
+
         if cfg!(target_os = "windows") {
             return dirs::cache_dir()
                 .expect("failed to determine LocalAppData directory")
@@ -228,7 +234,7 @@ pub fn hang_traces_dir() -> &'static PathBuf {
 pub fn logs_dir() -> &'static PathBuf {
     static LOGS_DIR: OnceLock<PathBuf> = OnceLock::new();
     LOGS_DIR.get_or_init(|| {
-        if cfg!(target_os = "macos") {
+        if cfg!(any(target_os = "macos", target_os = "ios")) {
             home_dir().join("Library/Logs").join(APP_NAME)
         } else {
             data_dir().join("logs")

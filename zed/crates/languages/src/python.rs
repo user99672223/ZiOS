@@ -327,6 +327,14 @@ impl TyLspAdapter {
     const ARCH_SERVER_NAME: &str = "apple-darwin";
 }
 
+// No binaries are downloaded on iOS (servers run in-process); the Darwin
+// names keep the shared download code compiling.
+#[cfg(target_os = "ios")]
+impl TyLspAdapter {
+    const GITHUB_ASSET_KIND: AssetKind = AssetKind::TarGz;
+    const ARCH_SERVER_NAME: &str = "apple-darwin";
+}
+
 #[cfg(target_os = "linux")]
 impl TyLspAdapter {
     const GITHUB_ASSET_KIND: AssetKind = AssetKind::TarGz;
@@ -2449,6 +2457,14 @@ impl RuffLspAdapter {
     const ARCH_SERVER_NAME: &str = "apple-darwin";
 }
 
+// No binaries are downloaded on iOS (servers run in-process); the Darwin
+// names keep the shared download code compiling.
+#[cfg(target_os = "ios")]
+impl RuffLspAdapter {
+    const GITHUB_ASSET_KIND: AssetKind = AssetKind::TarGz;
+    const ARCH_SERVER_NAME: &str = "apple-darwin";
+}
+
 #[cfg(target_os = "linux")]
 impl RuffLspAdapter {
     const GITHUB_ASSET_KIND: AssetKind = AssetKind::TarGz;
@@ -2729,6 +2745,14 @@ pub(crate) struct PyreflyLspAdapter {
 }
 
 #[cfg(target_os = "macos")]
+impl PyreflyLspAdapter {
+    const GITHUB_ASSET_KIND: AssetKind = AssetKind::TarGz;
+    const ARCH_SERVER_NAME: &str = "macos";
+}
+
+// No binaries are downloaded on iOS (servers run in-process); the Darwin
+// names keep the shared download code compiling.
+#[cfg(target_os = "ios")]
 impl PyreflyLspAdapter {
     const GITHUB_ASSET_KIND: AssetKind = AssetKind::TarGz;
     const ARCH_SERVER_NAME: &str = "macos";

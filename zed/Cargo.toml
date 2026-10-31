@@ -5,6 +5,7 @@ members = [
     "../crates/inproc",
     "../crates/ios_bridge",
     "../crates/lanmouse_rx",
+    "../crates/zed_ios",
     "../crates/zios_app",
     "crates/acp_thread",
     "crates/acp_tools",
@@ -527,6 +528,7 @@ zlog = { path = "crates/zlog" }
 inproc = { path = "../crates/inproc" }
 ios_bridge = { path = "../crates/ios_bridge" }
 lanmouse_rx = { path = "../crates/lanmouse_rx" }
+zed_ios = { path = "../crates/zed_ios" }
 zlog_settings = { path = "crates/zlog_settings" }
 ztracing = { path = "crates/ztracing" }
 ztracing_macro = { path = "crates/ztracing_macro" }

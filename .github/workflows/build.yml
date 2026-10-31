@@ -33,33 +33,53 @@ jobs:
           cargo test -p gpui_ios --lib
 
   simulator:
-    name: Simulator build and strict test pass
+    name: Simulator strict pass (${{ matrix.app }})
     runs-on: macos-26
-    timeout-minutes: 120
+    timeout-minutes: 240
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The GPUI smoke app gives fast feedback on the platform layer.
+          - app: gpui
+            package: zios_app
+            bin: ZiOS
+          - app: zed
+            package: zed
+            bin: zed
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup
         with:
-          cache-key: simulator
+          cache-key: simulator-${{ matrix.app }}
           targets: aarch64-apple-ios-sim
-      - name: Build ZiOS.app for the Simulator (strict mode)
-        run: scripts/build_app.sh sim
+      - name: Build for the Simulator (strict mode)
+        run: scripts/build_app.sh sim --package ${{ matrix.package }} --bin ${{ matrix.bin }}
       - name: Strict Simulator test pass (JIT forced off, then on)
-        run: scripts/sim_test.sh build/sim/ZiOS.app build/sim-results
+        run: scripts/sim_test.sh build/sim/ZiOS.app build/sim-results ${{ matrix.app }}
+      - name: Publish screenshots and logs to the ci-results branch
+        if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+          RESULTS_BRANCH: ci-results-${{ matrix.app }}
+        run: scripts/publish_ci_results.sh build/sim-results
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: simulator-screenshots
+          name: simulator-screenshots-${{ matrix.app }}
           path: build/sim-results/*.png
           if-no-files-found: warn
       - name: Upload Simulator logs
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: simulator-logs
+          name: simulator-logs-${{ matrix.app }}
           path: |
             build/sim-results/**/*.txt
             build/sim-results/logs/**
@@ -69,7 +89,7 @@ jobs:
   device:
     name: Device build (unsigned .ipa)
     runs-on: macos-26
-    timeout-minutes: 180
+    timeout-minutes: 340
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -78,8 +98,8 @@ jobs:
         with:
           cache-key: device
           targets: aarch64-apple-ios
-      - name: Build ZiOS.ipa (ios-release profile)
-        run: scripts/build_app.sh device
+      - name: Build Zed ZiOS.ipa (ios-release profile)
+        run: scripts/build_app.sh device --package zed --bin zed
       - name: Upload unsigned .ipa
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

@@ -12,6 +12,8 @@ default-run = "zed"
 workspace = true
 
 [features]
+# Strict Simulator mode (ZiOS); scripts/build_app.sh enables it for Simulator builds.
+strict = ["ios_bridge/strict"]
 tracy = ["ztracing/tracy"]
 # LEAK_BACKTRACE=1 cargo run --features zed/track-project-leak --profile release-fast
 track-project-leak = ["gpui/leak-detection"]
@@ -238,6 +240,10 @@ ztracing.workspace = true
 
 [target.'cfg(target_os = "macos")'.dependencies]
 nix = { workspace = true, features = ["user"] }
+
+[target.'cfg(target_os = "ios")'.dependencies]
+ios_bridge.workspace = true
+zed_ios.workspace = true
 
 [target.'cfg(target_os = "windows")'.dependencies]
 etw_tracing.workspace = true

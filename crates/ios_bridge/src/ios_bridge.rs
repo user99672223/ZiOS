@@ -5,6 +5,7 @@
 //! Everything here also builds on macOS (and Linux, with reduced functionality) so
 //! the logic can be unit-tested on the CI runner without a device.
 
+pub mod jit;
 pub mod logging;
 pub mod memory;
 pub mod paths;

@@ -694,6 +694,16 @@ fn initialize_file_watcher(fs: &dyn Fs, window: &mut Window, cx: &mut Context<Wo
     }
 }
 
+#[cfg(target_os = "ios")]
+#[allow(unused)]
+fn initialize_file_watcher(fs: &dyn Fs, _window: &mut Window, _cx: &mut Context<Workspace>) {
+    // iOS apps cannot quit, so there is no "troubleshoot and quit" prompt; the
+    // project still opens and reloads on focus without native events.
+    if let Err(error) = fs.start_native_watcher() {
+        log::error!("could not start the file watcher: {error:#}");
+    }
+}
+
 #[cfg(target_os = "windows")]
 #[allow(unused)]
 fn initialize_file_watcher(fs: &dyn Fs, window: &mut Window, cx: &mut Context<Workspace>) {

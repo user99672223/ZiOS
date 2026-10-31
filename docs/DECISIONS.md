@@ -129,3 +129,44 @@ covered by unit tests; the real key path is checked on the device
 
 ### Clipboard
 Upstream already maps GPUI's clipboard to `UIPasteboard` (text only).
+
+## Phase 3: Zed boots
+
+### Local iOS type-checking on Linux
+`cargo check --target aarch64-apple-ios` of all of Zed runs on Linux with shims
+(an empty-object C compiler, an archiver, and an `xcrun` that reports an empty
+SDK) because `check` never links. This finds iOS compile errors in minutes
+instead of a CI round trip. The shims are not part of the repository; CI builds
+with the real Xcode toolchain.
+
+### Crates changed for iOS (minimal, `cfg`-gated)
+- `gpui`: `PlatformScreenCaptureFrame = ()` on iOS (no screen capture).
+- `crashes`: the minidump sidecar re-executes Zed as a second process, which
+  iOS forbids. Shared data types stay in `crashes.rs`, the desktop sidecar moves
+  to `native.rs` unchanged, and `ios.rs` keeps the same API, storing session
+  metadata in-process. Native crashes come from MetricKit, panics from
+  `ios_bridge` (§12b).
+- `fs`: `trash-rs` has no iOS backend; iOS trashes with
+  `NSFileManager.trashItemAtURL` (files from Files-app providers land in
+  Recently Deleted) and restores by moving back. Darwin syscalls already used on
+  macOS (`fcntl(F_GETPATH)`, `renamex_np`) are enabled for iOS.
+- `paths`: the macOS layout inside the container (`HOME` is the container):
+  `Library/Application Support/Zed`, `Library/Logs/Zed`, `Library/Caches/Zed`.
+  Config stays at `~/.config/zed` inside the container, as on macOS.
+- `livekit_client`, `call`, `audio`: iOS uses the existing mock LiveKit backend
+  (as FreeBSD and windows-gnu do), so calls/screen sharing are disabled and the
+  large prebuilt libwebrtc is not linked. Text collaboration is unaffected.
+- `client::telemetry`: reports "iOS" and the iOS version (NSProcessInfo).
+- `settings::vscode_import`: reads the `osx` terminal keys on iOS.
+- `languages`: Darwin asset names for the GitHub download helpers so the code
+  compiles; downloads themselves are disabled on iOS (phase 8).
+- `zed` (main): logging through `ios_bridge`; no single-instance socket; no
+  login-shell environment probe (it starts a shell); no Node binary download;
+  no auto-updater (updates come through SideStore); an iOS file-watcher
+  initializer that logs instead of offering "troubleshoot and quit".
+
+### `crates/zed_ios`
+iOS glue that needs GPUI and the workspace (CI script runner now; status panel
+and display companion later). Kept outside `/zed` so upstream merges stay small.
+The CI runner opens folders into the existing window because iOS shows a single
+window.

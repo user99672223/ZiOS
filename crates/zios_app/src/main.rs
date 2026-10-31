@@ -24,6 +24,7 @@ fn main() {
             ios_bridge::strict::interposer_loaded()
         );
     }
+    ios_bridge::jit::start_monitor(strict.force_jit, std::time::Duration::from_secs(5));
     if let Some(cap) = strict.memory_cap_mb {
         ios_bridge::memory::start_watchdog(cap * 1024 * 1024, std::time::Duration::from_millis(250));
     }

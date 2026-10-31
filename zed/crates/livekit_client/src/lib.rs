@@ -16,7 +16,9 @@ pub use record::CaptureInput;
         test,
         feature = "test-support",
         all(target_os = "windows", target_env = "gnu"),
-        target_os = "freebsd"
+        target_os = "freebsd",
+        // Calls are disabled on iOS (no LiveKit/WebRTC); the mock keeps the API.
+        target_os = "ios"
     ))
 ))]
 mod livekit_client;
@@ -26,7 +28,9 @@ mod livekit_client;
         test,
         feature = "test-support",
         all(target_os = "windows", target_env = "gnu"),
-        target_os = "freebsd"
+        target_os = "freebsd",
+        // Calls are disabled on iOS (no LiveKit/WebRTC); the mock keeps the API.
+        target_os = "ios"
     ))
 ))]
 pub use livekit_client::*;
@@ -37,7 +41,9 @@ pub use livekit_client::*;
         test,
         feature = "test-support",
         all(target_os = "windows", target_env = "gnu"),
-        target_os = "freebsd"
+        target_os = "freebsd",
+        // Calls are disabled on iOS (no LiveKit/WebRTC); the mock keeps the API.
+        target_os = "ios"
     )
 ))]
 mod mock_client;
@@ -47,7 +53,9 @@ mod mock_client;
         test,
         feature = "test-support",
         all(target_os = "windows", target_env = "gnu"),
-        target_os = "freebsd"
+        target_os = "freebsd",
+        // Calls are disabled on iOS (no LiveKit/WebRTC); the mock keeps the API.
+        target_os = "ios"
     )
 ))]
 pub mod test;
@@ -57,7 +65,9 @@ pub mod test;
         test,
         feature = "test-support",
         all(target_os = "windows", target_env = "gnu"),
-        target_os = "freebsd"
+        target_os = "freebsd",
+        // Calls are disabled on iOS (no LiveKit/WebRTC); the mock keeps the API.
+        target_os = "ios"
     )
 ))]
 pub use mock_client::*;
