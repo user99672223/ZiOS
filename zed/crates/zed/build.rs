@@ -23,7 +23,9 @@ fn main() {
         }
     }
 
-    if cfg!(target_os = "macos") {
+    // Build scripts run on the host: `cfg!` here describes the build machine,
+    // so a macOS host building for iOS must check the target instead.
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("macos") {
         println!("cargo:rustc-env=MACOSX_DEPLOYMENT_TARGET=10.15.7");
 
         // Weakly link ReplayKit to ensure Zed can be used on macOS 10.15+.
