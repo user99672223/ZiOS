@@ -993,6 +993,9 @@ impl VsCodeSettings {
         let platform = "linux";
         #[cfg(target_os = "macos")]
         let platform = "osx";
+        // VS Code has no iOS keys; settings imported on an iPhone come from a Mac.
+        #[cfg(target_os = "ios")]
+        let platform = "osx";
         #[cfg(target_os = "freebsd")]
         let platform = "freebsd";
         let env = self

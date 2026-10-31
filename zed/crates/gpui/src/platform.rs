@@ -29,7 +29,11 @@ pub mod scap_screen_capture;
     feature = "screen-capture"
 ))]
 pub(crate) type PlatformScreenCaptureFrame = scap::frame::Frame;
-#[cfg(not(feature = "screen-capture"))]
+// iOS has no screen capture: Zed's screen sharing is disabled there.
+#[cfg(any(
+    not(feature = "screen-capture"),
+    not(any(target_os = "windows", target_os = "linux", target_os = "macos"))
+))]
 pub(crate) type PlatformScreenCaptureFrame = ();
 #[cfg(all(target_os = "macos", feature = "screen-capture"))]
 pub(crate) type PlatformScreenCaptureFrame =

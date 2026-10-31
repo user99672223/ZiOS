@@ -6,16 +6,19 @@ edition.workspace = true
 license = "GPL-3.0-or-later"
 
 [dependencies]
-crash-handler.workspace = true
 log.workspace = true
-minidumper.workspace = true
 parking_lot.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 system_specs.workspace = true
+
+# The minidump sidecar process cannot run on iOS.
+[target.'cfg(not(target_os = "ios"))'.dependencies]
+crash-handler.workspace = true
+minidumper.workspace = true
 zstd.workspace = true
 
-[target.'cfg(not(target_os = "windows"))'.dependencies]
+[target.'cfg(not(any(target_os = "windows", target_os = "ios")))'.dependencies]
 async-process.workspace = true
 
 [target.'cfg(target_os = "linux")'.dependencies]

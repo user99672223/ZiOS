@@ -1,5 +1,7 @@
 pub mod fs_watcher;
 mod git_clone_progress;
+#[cfg(target_os = "ios")]
+mod ios_trash;
 
 use parking_lot::Mutex;
 use slotmap::{KeyData, SlotMap};
@@ -27,7 +29,7 @@ use std::os::unix::ffi::OsStrExt;
 #[cfg(unix)]
 use std::os::unix::fs::{FileTypeExt, MetadataExt, PermissionsExt};
 
-#[cfg(any(target_os = "macos", target_os = "freebsd"))]
+#[cfg(any(target_os = "macos", target_os = "ios", target_os = "freebsd"))]
 use std::mem::MaybeUninit;
 
 use async_tar::Archive;
@@ -226,6 +228,7 @@ struct TrashedEntry {
     pub original_parent: PathBuf,
 }
 
+#[cfg(not(target_os = "ios"))]
 impl From<trash::TrashItem> for TrashedEntry {
     fn from(item: trash::TrashItem) -> Self {
         Self {
@@ -236,6 +239,7 @@ impl From<trash::TrashItem> for TrashedEntry {
     }
 }
 
+#[cfg(not(target_os = "ios"))]
 impl TrashedEntry {
     fn into_trash_item(self) -> trash::TrashItem {
         trash::TrashItem {
@@ -264,6 +268,7 @@ pub enum TrashRestoreError {
     Unknown { description: String },
 }
 
+#[cfg(not(target_os = "ios"))]
 impl From<trash::Error> for TrashRestoreError {
     fn from(err: trash::Error) -> Self {
         match err {
@@ -470,7 +475,7 @@ pub trait FileHandle: Send + Sync + std::fmt::Debug {
 }
 
 impl FileHandle for std::fs::File {
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", target_os = "ios"))]
     fn current_path(&self, _: &Arc<dyn Fs>) -> Result<PathBuf> {
         use std::{
             ffi::{CStr, OsStr},
@@ -626,12 +631,12 @@ impl RealFs {
     }
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "ios", target_os = "linux"))]
 fn rename_without_replace(source: &Path, target: &Path) -> io::Result<()> {
     let source = path_to_c_string(source)?;
     let target = path_to_c_string(target)?;
 
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", target_os = "ios"))]
     let result = unsafe { libc::renamex_np(source.as_ptr(), target.as_ptr(), libc::RENAME_EXCL) };
 
     #[cfg(target_os = "linux")]
@@ -673,7 +678,7 @@ fn rename_without_replace(source: &Path, target: &Path) -> io::Result<()> {
     .map_err(|_| io::Error::last_os_error())
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "ios", target_os = "linux"))]
 fn path_to_c_string(path: &Path) -> io::Result<CString> {
     CString::new(path.as_os_str().as_bytes()).map_err(|_| {
         io::Error::new(
@@ -830,7 +835,7 @@ impl Fs for RealFs {
         }
 
         let use_metadata_fallback = {
-            #[cfg(any(target_os = "macos", target_os = "linux", target_os = "windows"))]
+            #[cfg(any(target_os = "macos", target_os = "ios", target_os = "linux", target_os = "windows"))]
             {
                 let source = source.to_path_buf();
                 let target = target.to_path_buf();
@@ -863,7 +868,7 @@ impl Fs for RealFs {
                 }
             }
 
-            #[cfg(not(any(target_os = "macos", target_os = "linux", target_os = "windows")))]
+            #[cfg(not(any(target_os = "macos", target_os = "ios", target_os = "linux", target_os = "windows")))]
             {
                 // For platforms which do not have an atomic no-overwrite rename yet.
                 true
@@ -932,10 +937,15 @@ impl Fs for RealFs {
         // its target and leave the link behind.
         let path = std::path::absolute(path).context("Could not make the path absolute")?;
 
+        #[cfg(not(target_os = "ios"))]
         let entry = smol::unblock(move || trash::delete_with_info(path))
             .await
             .context("Could not trash file or dir")?
             .into();
+        #[cfg(target_os = "ios")]
+        let entry = smol::unblock(move || ios_trash::delete_with_info(path))
+            .await
+            .context("Could not trash file or dir")?;
 
         Ok(self.trash.lock().insert(entry))
     }
@@ -1418,7 +1428,11 @@ impl Fs for RealFs {
         std::thread::Builder::new()
             .name("restore trashed item".to_string())
             .spawn(move || {
-                let res = trash::restore_all([trashed_entry.into_trash_item()]);
+                #[cfg(not(target_os = "ios"))]
+                let res = trash::restore_all([trashed_entry.into_trash_item()])
+                    .map_err(TrashRestoreError::from);
+                #[cfg(target_os = "ios")]
+                let res = ios_trash::restore(trashed_entry);
                 tx.send(res)
             })
             .expect("The OS can spawn a threads");

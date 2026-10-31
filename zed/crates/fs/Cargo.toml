@@ -43,7 +43,14 @@ tempfile.workspace = true
 text.workspace = true
 util.workspace = true
 notify = "9.0.0-rc.4"
+
+# trash-rs has no iOS backend; iOS uses NSFileManager directly (src/ios_trash.rs).
+[target.'cfg(not(target_os = "ios"))'.dependencies]
 trash = { git = "https://github.com/zed-industries/trash-rs", rev = "41c6c800d884a89351f3b8856d12894cccee261d" }
+
+[target.'cfg(target_os = "ios")'.dependencies]
+objc2.workspace = true
+objc2-foundation = { workspace = true, features = ["NSError", "NSFileManager", "NSString", "NSURL"] }
 
 [target.'cfg(unix)'.dependencies]
 rustix.workspace = true
