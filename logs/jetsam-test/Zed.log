@@ -1,0 +1,74 @@
+2026-10-31T17:00:02+00:00 INFO  [ZiOS] ZiOS starting: strict mode on, StrictConfig { force_jit: Auto, memory_cap_mb: Some(3072), thermal_override: None, low_power_override: None }
+2026-10-31T17:00:02+00:00 INFO  [ZiOS] strict interposer loaded: true
+2026-10-31T17:00:02+00:00 INFO  [ios_bridge::jit] JIT: not enabled (method none, debugged false, iOS 26.6.2, iPhone15,4)
+2026-10-31T17:00:02+00:00 INFO  [ios_bridge::memory] memory watchdog: simulated cap 3.00 GB
+2026-10-31T17:00:03+00:00 WARN  [gpui_apple::text_system] skipping duplicate font "System Font Regular Italic Semibold Italic" with PostScript name ".SFUI-SemiboldItalic" in family ".AppleSystemUIFont"
+2026-10-31T17:00:03+00:00 WARN  [gpui_apple::text_system] skipping duplicate font "System Font Semibold" with PostScript name ".SFUI-Semibold" in family ".AppleSystemUIFont"
+2026-10-31T17:00:03+00:00 INFO  [ZiOS::app] main window opened
+2026-10-31T17:00:03+00:00 INFO  [gpui_ios::ios::window] GPUI iOS: Window active status changed to: true
+2026-10-31T17:00:10+00:00 INFO  [ZiOS] ZiOS starting: strict mode on, StrictConfig { force_jit: Off, memory_cap_mb: Some(3072), thermal_override: None, low_power_override: None }
+2026-10-31T17:00:10+00:00 INFO  [ZiOS] strict interposer loaded: true
+2026-10-31T17:00:10+00:00 INFO  [ios_bridge::jit] JIT: not enabled (method none, debugged false, iOS 26.6.2, iPhone15,4, forced Off)
+2026-10-31T17:00:10+00:00 INFO  [ios_bridge::memory] memory watchdog: simulated cap 3.00 GB
+2026-10-31T17:00:10+00:00 WARN  [gpui_apple::text_system] skipping duplicate font "System Font Regular Italic Semibold Italic" with PostScript name ".SFUI-SemiboldItalic" in family ".AppleSystemUIFont"
+2026-10-31T17:00:10+00:00 WARN  [gpui_apple::text_system] skipping duplicate font "System Font Semibold" with PostScript name ".SFUI-Semibold" in family ".AppleSystemUIFont"
+2026-10-31T17:00:10+00:00 INFO  [ZiOS::app] main window opened
+2026-10-31T17:00:10+00:00 INFO  [ZiOS::ci] running CI script: [Wait(4s), Type("hello zed"), Key("cmd-s"), Wait(500ms), Mark("main"), MemoryWarning, Wait(2s), Mark("after_memory_warning")]
+2026-10-31T17:00:10+00:00 INFO  [gpui_ios::ios::window] GPUI iOS: Window active status changed to: true
+2026-10-31T17:00:14+00:00 INFO  [ZiOS::app] key down: h (held: false)
+2026-10-31T17:00:14+00:00 INFO  [ZiOS::app] key down: e (held: false)
+2026-10-31T17:00:14+00:00 INFO  [ZiOS::app] key down: l (held: false)
+2026-10-31T17:00:14+00:00 INFO  [ZiOS::app] key down: l (held: false)
+2026-10-31T17:00:14+00:00 INFO  [ZiOS::app] key down: o (held: false)
+2026-10-31T17:00:14+00:00 INFO  [ZiOS::app] key down: space (held: false)
+2026-10-31T17:00:14+00:00 INFO  [ZiOS::app] key down: z (held: false)
+2026-10-31T17:00:14+00:00 INFO  [ZiOS::app] key down: e (held: false)
+2026-10-31T17:00:14+00:00 INFO  [ZiOS::app] key down: d (held: false)
+2026-10-31T17:00:14+00:00 INFO  [ZiOS::app] key down: s (held: false)
+2026-10-31T17:00:15+00:00 INFO  [ZiOS::ci] ZIOS_CI_MARK main
+2026-10-31T17:00:15+00:00 INFO  [ZiOS::ci] requesting a UIKit memory warning
+2026-10-31T17:00:15+00:00 WARN  [ios_bridge::memory] memory warning (System): footprint 24 MB
+2026-10-31T17:00:17+00:00 INFO  [ZiOS::ci] ZIOS_CI_MARK after_memory_warning
+2026-10-31T17:05:12+00:00 INFO  [ZiOS] ZiOS starting: strict mode on, StrictConfig { force_jit: On, memory_cap_mb: Some(4096), thermal_override: None, low_power_override: None }
+2026-10-31T17:05:12+00:00 INFO  [ZiOS] strict interposer loaded: true
+2026-10-31T17:05:12+00:00 INFO  [ios_bridge::jit] JIT: enabled (method TXM, debugged false, iOS 26.6.2, iPhone15,4, forced On)
+2026-10-31T17:05:12+00:00 INFO  [ios_bridge::memory] memory watchdog: simulated cap 4.00 GB
+2026-10-31T17:05:12+00:00 WARN  [gpui_apple::text_system] skipping duplicate font "System Font Regular Italic Semibold Italic" with PostScript name ".SFUI-SemiboldItalic" in family ".AppleSystemUIFont"
+2026-10-31T17:05:12+00:00 WARN  [gpui_apple::text_system] skipping duplicate font "System Font Semibold" with PostScript name ".SFUI-Semibold" in family ".AppleSystemUIFont"
+2026-10-31T17:05:12+00:00 INFO  [ZiOS::app] main window opened
+2026-10-31T17:05:12+00:00 INFO  [ZiOS::ci] running CI script: [Wait(4s), Type("hello zed"), Key("cmd-s"), Wait(500ms), Mark("main"), MemoryWarning, Wait(2s), Mark("after_memory_warning")]
+2026-10-31T17:05:12+00:00 INFO  [gpui_ios::ios::window] GPUI iOS: Window active status changed to: true
+2026-10-31T17:05:16+00:00 INFO  [ZiOS::app] key down: h (held: false)
+2026-10-31T17:05:16+00:00 INFO  [ZiOS::app] key down: e (held: false)
+2026-10-31T17:05:16+00:00 INFO  [ZiOS::app] key down: l (held: false)
+2026-10-31T17:05:16+00:00 INFO  [ZiOS::app] key down: l (held: false)
+2026-10-31T17:05:16+00:00 INFO  [ZiOS::app] key down: o (held: false)
+2026-10-31T17:05:16+00:00 INFO  [ZiOS::app] key down: space (held: false)
+2026-10-31T17:05:16+00:00 INFO  [ZiOS::app] key down: z (held: false)
+2026-10-31T17:05:16+00:00 INFO  [ZiOS::app] key down: e (held: false)
+2026-10-31T17:05:16+00:00 INFO  [ZiOS::app] key down: d (held: false)
+2026-10-31T17:05:16+00:00 INFO  [ZiOS::app] key down: s (held: false)
+2026-10-31T17:05:17+00:00 INFO  [ZiOS::ci] ZIOS_CI_MARK main
+2026-10-31T17:05:17+00:00 INFO  [ZiOS::ci] requesting a UIKit memory warning
+2026-10-31T17:05:17+00:00 WARN  [ios_bridge::memory] memory warning (System): footprint 24 MB
+2026-10-31T17:05:19+00:00 INFO  [ZiOS::ci] ZIOS_CI_MARK after_memory_warning
+2026-10-31T17:10:14+00:00 INFO  [ZiOS] ZiOS starting: strict mode on, StrictConfig { force_jit: Auto, memory_cap_mb: Some(3072), thermal_override: None, low_power_override: None }
+2026-10-31T17:10:14+00:00 INFO  [ZiOS] strict interposer loaded: true
+2026-10-31T17:10:14+00:00 INFO  [ios_bridge::jit] JIT: not enabled (method none, debugged false, iOS 26.6.2, iPhone15,4)
+2026-10-31T17:10:14+00:00 INFO  [ios_bridge::memory] memory watchdog: simulated cap 3.00 GB
+2026-10-31T17:10:14+00:00 WARN  [gpui_apple::text_system] skipping duplicate font "System Font Regular Italic Semibold Italic" with PostScript name ".SFUI-SemiboldItalic" in family ".AppleSystemUIFont"
+2026-10-31T17:10:14+00:00 WARN  [gpui_apple::text_system] skipping duplicate font "System Font Semibold" with PostScript name ".SFUI-Semibold" in family ".AppleSystemUIFont"
+2026-10-31T17:10:14+00:00 INFO  [ZiOS::app] main window opened
+2026-10-31T17:10:14+00:00 INFO  [ZiOS::ci] running CI script: [Wait(2s), SpawnTest]
+2026-10-31T17:10:14+00:00 INFO  [gpui_ios::ios::window] GPUI iOS: Window active status changed to: true
+2026-10-31T17:10:16+00:00 INFO  [ZiOS::ci] spawn_test: attempting to spawn /bin/echo
+2026-10-31T17:15:15+00:00 INFO  [ZiOS] ZiOS starting: strict mode on, StrictConfig { force_jit: Auto, memory_cap_mb: Some(24), thermal_override: None, low_power_override: None }
+2026-10-31T17:15:15+00:00 INFO  [ZiOS] strict interposer loaded: true
+2026-10-31T17:15:15+00:00 INFO  [ios_bridge::jit] JIT: not enabled (method none, debugged false, iOS 26.6.2, iPhone15,4)
+2026-10-31T17:15:15+00:00 INFO  [ios_bridge::memory] memory watchdog: simulated cap 24 MB
+2026-10-31T17:15:15+00:00 WARN  [ios_bridge::memory] memory warning (Watchdog): footprint 20 MB
+2026-10-31T17:15:15+00:00 WARN  [gpui_apple::text_system] skipping duplicate font "System Font Regular Italic Semibold Italic" with PostScript name ".SFUI-SemiboldItalic" in family ".AppleSystemUIFont"
+2026-10-31T17:15:15+00:00 WARN  [gpui_apple::text_system] skipping duplicate font "System Font Semibold" with PostScript name ".SFUI-Semibold" in family ".AppleSystemUIFont"
+2026-10-31T17:15:16+00:00 INFO  [ZiOS::app] main window opened
+2026-10-31T17:15:16+00:00 INFO  [ZiOS::ci] running CI script: [Wait(60s)]
+2026-10-31T17:15:16+00:00 INFO  [gpui_ios::ios::window] GPUI iOS: Window active status changed to: true

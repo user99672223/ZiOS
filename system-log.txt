@@ -1,0 +1,647 @@
+getpwuid_r did not find a match for uid 501
+Timestamp               Ty Process[PID:TID]
+2026-10-31 17:15:12.769 Df CoreSimulatorBridge[14751:1bd0b] Requesting launch of dev.zios.app with options: {
+    environment =     {
+        "ZED_IOS_MEMORY_CAP_MB" = 24;
+        "ZED_LOG" = info;
+        "ZIOS_CI_SCRIPT" = "wait:60000";
+    };
+    stderr = "/Users/runner/work/ZiOS/ZiOS/build/sim-results/jetsam-test.stderr.txt";
+    stdout = "/Users/runner/work/ZiOS/ZiOS/build/sim-results/jetsam-test.stdout.txt";
+    "terminate_running_process" = 1;
+}
+2026-10-31 17:15:12.770 Df CoreSimulatorBridge[14751:1bd0b] Beginning launch sequence for bundle 'dev.zios.app'
+	retryTimeout: 120.000000 (default write com.apple.CoreSimulatorBridge LaunchRetryTimeout <value>)
+	bootTimeout: 300.000000 (default write com.apple.CoreSimulatorBridge BootRetryTimeout <value>)
+	bootLeeway: 120.000000 (default write com.apple.CoreSimulatorBridge BootLeeway <value>)
+	Note: Use 'xcrun simctl spawn booted defaults write <domain> <key> <value>' to modify defaults in the booted Simulator device.
+Simulator booted at: Sat Oct 31 16:57:22 2026
+Current time: Sat Oct 31 17:15:13 2026
+Within boot leeway: NO
+2026-10-31 17:15:12.771 Df CoreSimulatorBridge[14751:1bd0b] Launch attempt #0 for bundle 'dev.zios.app', have been trying to launch for 0 seconds.
+2026-10-31 17:15:12.779 Df CoreSimulatorBridge[14751:1bd0b] Got LSBundleProxy for 'dev.zios.app', sequenceNumber 708, cacheGUID 12FB7CB6-7F27-46B5-83C7-068A3693998C
+2026-10-31 17:15:12.779 Df CoreSimulatorBridge[14751:1bd0b] [com.apple.FrontBoard:Common] FBSSystemAppProxy: Sending request to terminate application dev.zios.app
+2026-10-31 17:15:12.780 Df SpringBoard[14721:20c61] [com.apple.FrontBoard:Common] [FBSystemService] Request received from CoreSimulatorBr.14751 to terminate application dev.zios.app: "Termination requested by simulator host"
+2026-10-31 17:15:12.787 E  CoreSimulatorBridge[14751:24ab3] [com.apple.FrontBoard:Common] FBSSystemAppProxy: Error reported for termination request: <NSError: 0x10604ba20; domain: NSPOSIXErrorDomain; code: 3 ("No such process"); "The request to terminate "dev.zios.app" failed. found nothing to terminate">
+2026-10-31 17:15:12.788 Df CoreSimulatorBridge[14751:1bd0b] [com.apple.FrontBoard:Common] [FBSSystemService][0xb656] Sending request to open "dev.zios.app"
+2026-10-31 17:15:12.791 Df SpringBoard[14721:20c61] [com.apple.FrontBoard:Common] [FBSystemService][0xb656] Received request to open "dev.zios.app" from CoreSimulatorBr:14751.
+2026-10-31 17:15:12.791 Df SpringBoard[14721:20c61] [com.apple.FrontBoard:Common] [FBSystemService][0xb656] Activation request for dev.zios.app contained LSCacheGUID 12FB7CB6-7F27-46B5-83C7-068A3693998C and LSSequenceNumber 708.
+2026-10-31 17:15:12.791 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:Common] [FBSystemService][0xb656] Activation request for dev.zios.app will wait 10.00s for app availability, with retry every 2.00s.
+2026-10-31 17:15:12.791 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:Common] [FBSystemService][0xb656] Attempting activation of dev.zios.app with {UUID: 12FB7CB6-7F27-46B5-83C7-068A3693998C, Sequence: 708} vs {UUID: 12FB7CB6-7F27-46B5-83C7-068A3693998C, Sequence: 708}
+2026-10-31 17:15:12.798 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Workspace] Received trusted open application request for "dev.zios.app" from <FBProcess: 0x119aab000; osservice<com.apple.CoreSimulator.bridge>:14751(v7308)>.
+2026-10-31 17:15:12.853 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] Executing request: <SBMainWorkspaceTransitionRequest: 0x11eef99a0; eventLabel: OpenApplication(sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A)ForRequester(CoreSimulatorBr.14751); display: Main; source: FBSystemService>
+2026-10-31 17:15:12.858 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:Common] [FBWorkspaceEvent] Executing: <FBWorkspaceEvent: 0x119cbdfe0; OpenApplication(sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A)ForRequester(CoreSimulatorBr.14751)>
+2026-10-31 17:15:12.879 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:TraitsArbiter] [SwitcherOrientation] outSwitcherOrientation: portrait (1), outElementsOrientations: {
+    "sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A" = 1;
+}
+2026-10-31 17:15:12.880 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Transaction] Running <SBAppToAppWorkspaceTransaction: 0x11bb1b180> for transition request:
+<SBMainWorkspaceTransitionRequest: 0x11eef99a0; eventLabel: OpenApplication(sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A)ForRequester(CoreSimulatorBr.14751); display: Main; source: FBSystemService> {
+    applicationContext = <SBWorkspaceApplicationSceneTransitionContext: 0x119b21b80; background: NO> entities = {
+        SBLayoutRolePrimary = <SBDeviceApplicationSceneEntity: 0x108456260; ID: sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A; layoutRole: primary>;
+    };
+}
+2026-10-31 17:15:12.888 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] Generating initialization context on main thread for: dev.zios.app
+2026-10-31 17:15:12.895 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:Process] Asked to bootstrap a new process with identity: app<dev.zios.app((null))>
+2026-10-31 17:15:12.895 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:Process] Creating process (sync=true) with identity: app<dev.zios.app((null))>
+2026-10-31 17:15:12.895 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:ProcessWorkspace] Created <FBWorkspace: 0x11eefb340; <FBApplicationProcess: 0x11bb1ab80; app<dev.zios.app>:<invalid>>>
+2026-10-31 17:15:12.897 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:Process] Bootstrapping app<dev.zios.app> with intent foreground-interactive
+2026-10-31 17:15:12.905 Df runningboardd[14724:24850] [com.apple.runningboard:ttl] Acquiring assertion targeting app<dev.zios.app((null))> from originator [osservice<com.apple.SpringBoard>:14721] with description <RBSAssertionDescriptor| "FBApplicationProcess" ID:14724-14721-2567 target:app<dev.zios.app((null))> attributes:[
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableLPRunReason-Resume" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"Visibility" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableRole-UIFocal" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableJetsamPriority-Foreground" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableBootstrapping" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.pagein-prefetching" name:"LaunchPrefetch" sourceEnvironment:"(null)">
+	]>
+2026-10-31 17:15:12.905 E  runningboardd[14724:24850] [com.apple.runningboard:assertion] Multiple RBSRunningReasonAttribute provided: 10000 vs 20838. First one wins, but client should be fixed for assertion 14724-14721-2567 (target:app<dev.zios.app((null))>)
+2026-10-31 17:15:12.905 Df runningboardd[14724:24850] [com.apple.runningboard:ttl] Assertion 14724-14721-2567 (target:app<dev.zios.app((null))>) will be created as active
+2026-10-31 17:15:12.906 Df runningboardd[14724:24850] [com.apple.runningboard:job] Creating and launching job for: app<dev.zios.app((null))>
+2026-10-31 17:15:12.906 Df runningboardd[14724:24850] [com.apple.runningboard:general] _mutateContextIfNeeded called for dev.zios.app
+2026-10-31 17:15:12.908 Df runningboardd[14724:24850] [com.apple.runningboard:job] 'app<dev.zios.app((null))>' Skipping container path lookup because containerization was prevented (<RBSLaunchContext: 0x1093ac000>)
+2026-10-31 17:15:12.908 Df runningboardd[14724:24854] [com.apple.runningboard:job_oversize] 'app<dev.zios.app((null))>' Constructed job description:
+<dictionary: 0x1092fb720> { count = 22, transaction: 0, voucher = 0x0, contents =
+	"ProcessType" => <string: 0x1092da430> { string cache = 0x0, length = 3, contents = "App" }
+	"EnableTransactions" => <bool: 0x1e6e64560>: false
+	"_ManagedBy" => <string: 0x1092da970> { string cache = 0x0, length = 22, contents = "com.apple.runningboard" }
+	"RootedSimulatorPath" => <bool: 0x1e6e64540>: true
+	"StandardOutPath" => <string: 0x1092da400> { string cache = 0x0, length = 69, contents = "/Users/runner/work/ZiOS/ZiOS/build/sim-results/jetsam-test.stdout.txt" }
+	"CFBundleIdentifier" => <string: 0x1092daeb0> { string cache = 0x0, length = 12, contents = "dev.zios.app" }
+	"_ResourceCoalition" => <string: 0x1092da040> { string cache = 0x0, length = 25, contents = "app<dev.zios.app((null))>" }
+	"_POSIXSpawnTelemetryPageIn" => <bool: 0x1e6e64540>: true
+	"ThrottleInterval" => <int64: 0x9ec225323ec0423f>: 2147483647
+	"StandardErrorPath" => <string: 0x1092d95c0> { string cache = 0x0, length = 69, contents = "/Users/runner/work/ZiOS/ZiOS/build/sim-results/jetsam-test.stderr.txt" }
+	"MachServices" => <dictionary: 0x1092f88a0> { count = 0, transaction: 0, voucher = 0x0, contents =
+	}
+	"EnablePressuredExit" => <bool: 0x1e6e64560>: false
+	"InitialTaskRole" => <int64: 0x9ec22531c13fbdcf>: 1
+	"UserName" => <string: 0x1092d9740> { string cache = 0x0, length = 6, contents = "mobile" }
+	"EnvironmentVariables" => <dictionary: 0x1092f9ce0> { count = 6, transaction: 0, voucher = 0x0, contents =
+		"TMPDIR" => <string: 0x1092d8090> { string cache = 0x0, length = 164, contents = "/Users/runner/Library/Developer/CoreSimulator/Devices/33696AB5-A753-481B-AB8C-06D212C33C31/data/Containers/Data/Application/DF0734F5-A640-4FC4-A23D-E72429EFD105/tmp" }
+		"HOME" => <string: 0x1092d8bd0> { string cache = 0x0, length = 160, contents = "/Users/runner/Library/Developer/CoreSimulator/Devices/33696AB5-A753-481B-AB8C-06D212C33C31/data/Containers/Data/Application/DF0734F5-A640-4FC4-A23D-E72429EFD105" }
+		"ZED_IOS_MEMORY_CAP_MB" => <string: 0x1092d9500> { string cache = 0x0, length = 2, contents = "24" }
+		"ZIOS_CI_SCRIPT" => <string: 0x1092d8270> { string cache = 0x0, length = 10, contents = "wait:60000" }
+		"CFFIXED_USER_HOME" => <string: 0x1092da010> { string cache = 0x0, length = 160, contents = "/Users/runner/Library/Developer/CoreSimulator/Devices/33696AB5-A753-481B-AB8C-06D212C33C31/data/Containers/Data/Application/DF0734F5-A640-4FC4-A23D-E72429EFD105" }
+		"ZED_LOG" => <string: 0x1092d8c30> { string cache = 0x0, length = 4, contents = "info" }
+	}
+	"_AdditionalProperties" => <dictionary: 0x1092f9c80> { count = 1, transaction: 0, voucher = 0x0, contents =
+		"RunningBoard" => <dictionary: 0x1092fbf00> { count = 3, transaction: 0, voucher = 0x0, contents =
+			"Managed" => <bool: 0x1e6e64540>: true
+			"RunningBoardLaunchedIdentity" => <dictionary: 0x1092fbf60> { count = 2, transaction: 0, voucher = 0x0, contents =
+				"TYPE" => <int64: 0x9ec22531c13fbdd7>: 2
+				"EAI" => <string: 0x1092d85a0> { string cache = 0x0, length = 12, contents = "dev.zios.app" }
+			}
+			"RunningBoardLaunched" => <bool: 0x1e6e64540>: true
+		}
+	}
+	"ExitTimeOut" => <int64: 0x9ec22531c13fbdcf>: 1
+	"Label" => <string: 0x1092dbb40> { string cache = 0x0, length = 46, contents = "UIKitApplication:dev.zios.app[d6e9][rb-legacy]" }
+	"MaterializeDatalessFiles" => <bool: 0x1e6e64540>: true
+	"_LaunchType" => <int64: 0x9ec22531c13fbddf>: 3
+	"ProgramArguments" => <array: 0x1092d80f0> { count = 1, capacity = 8, contents =
+		0: <string: 0x1092db300> { string cache = 0x0, length = 176, contents = "/Users/runner/Library/Developer/CoreSimulator/Devices/33696AB5-A753-481B-AB8C-06D212C33C31/data/Containers/Bundle/Application/09643414-EBD1-488D-9578-618C06149F88/ZiOS.app/ZiOS" }
+	}
+	"Program" => <string: 0x1092dbde0> { string cache = 0x0, length = 176, contents = "/Users/runner/Library/Developer/CoreSimulator/Devices/33696AB5-A753-481B-AB8C-06D212C33C31/data/Containers/Bundle/Application/09643414-EBD1-488D-9578-618C06149F88/ZiOS.app/ZiOS" }
+}
+2026-10-31 17:15:13.001 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:AppSwitcher] <SBFullScreenSwitcherLiveContentOverlayCoordinator: 0x11b912980> Adding SwitcherScene overlay for: <SBAppLayout: 0x11dc07c80; primary: dev.zios.app:309CDECB648A; environment: main>, animated: NO
+2026-10-31 17:15:13.064 Df runningboardd[14724:24850] [com.apple.runningboard:general] Full encoding handle [app<dev.zios.app((null))>:58004], with data e4ebae860000e294, and pid 58004
+2026-10-31 17:15:13.064 Df runningboardd[14724:24850] [com.apple.runningboard:process] [app<dev.zios.app((null))>:58004] Memory Limits: active 0 inactive 0
+ <RBJetsamProperties| tasklimit=0
+(null)>
+2026-10-31 17:15:13.064 Df runningboardd[14724:24850] [com.apple.runningboard:process] [app<dev.zios.app((null))>:58004] This process will be managed.
+2026-10-31 17:15:13.064 E  runningboardd[14724:24850] [com.apple.runningboard:process] [app<dev.zios.app((null))>:58004] Memorystatus failed with unexpected error: Operation not permitted (1)
+2026-10-31 17:15:13.064 Df runningboardd[14724:24850] [com.apple.runningboard:process] [app<dev.zios.app((null))>:58004] is not freezer eligible, disabling freezing.
+2026-10-31 17:15:13.064 E  runningboardd[14724:24850] [com.apple.runningboard:process] [app<dev.zios.app((null))>:58004] Memorystatus failed with unexpected error: Invalid argument (22)
+2026-10-31 17:15:13.064 E  runningboardd[14724:24850] [com.apple.runningboard:process] [app<dev.zios.app((null))>:58004] Memorystatus failed with unexpected error: Operation not permitted (1)
+2026-10-31 17:15:13.064 Df runningboardd[14724:24850] [com.apple.runningboard:ttl] Now tracking process: [app<dev.zios.app((null))>:58004]
+2026-10-31 17:15:13.064 Df runningboardd[14724:24850] [com.apple.runningboard:assertion] [app<dev.zios.app((null))>:58004]: applying persistent assertion '14724-14721-2567 (target:app<dev.zios.app((null))>)'
+2026-10-31 17:15:13.065 Df runningboardd[14724:24854] [com.apple.runningboard:monitor] Calculated state for app<dev.zios.app((null))>: running-active (role: UserInteractiveFocal) (endowments: {(
+    <RBSProcessEndowmentInfo| namespace:com.apple.frontboard.visibility env:(null)  0>
+)})
+2026-10-31 17:15:13.065 Df runningboardd[14724:24850] [com.apple.runningboard:assertion] Using default underlying assertion for app: [app<dev.zios.app((null))>:58004]
+2026-10-31 17:15:13.066 Df runningboardd[14724:24850] [com.apple.runningboard:ttl] Acquiring assertion targeting [app<dev.zios.app((null))>:58004] from originator [app<dev.zios.app((null))>:58004] with description <RBSAssertionDescriptor| "RB Underlying Assertion" ID:14724-14724-2568 target:58004 attributes:[
+	<RBSDomainAttribute| domain:"com.apple.underlying" name:"defaultUnderlyingAppAssertion" sourceEnvironment:"(null)">,
+	<RBSAcquisitionCompletionAttribute| policy:AfterApplication>
+	]>
+2026-10-31 17:15:13.066 Df runningboardd[14724:24850] [com.apple.runningboard:ttl] Assertion 14724-14724-2568 (target:[app<dev.zios.app((null))>:58004]) will be created as active
+2026-10-31 17:15:13.066 Df runningboardd[14724:20629] [com.apple.runningboard:ttl] [app<dev.zios.app((null))>:58004] Resuming task.
+2026-10-31 17:15:13.067 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:Process] [app<dev.zios.app>:58004] Bootstrap success!
+2026-10-31 17:15:13.067 Df SpringBoard[14721:1f1d8] [com.apple.runningboard:process] Hit the server for a process handle 4ebae860000e294 that resolved to: [app<dev.zios.app((null))>:58004]
+2026-10-31 17:15:13.067 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:Process] [app<dev.zios.app>:58004] Setting process task state to: Running
+2026-10-31 17:15:13.067 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:Process] [app<dev.zios.app>:58004] Setting process visibility to: Foreground
+2026-10-31 17:15:13.067 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:ProcessWorkspace] [app<dev.zios.app>:58004] Registering event dispatcher after bootstrap
+2026-10-31 17:15:13.068 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:ProcessWorkspace] [app<dev.zios.app>:58004] Initial launch state: FV-Focal[100].
+2026-10-31 17:15:13.068 Df runningboardd[14724:24852] [com.apple.runningboard:general] [app<dev.zios.app((null))>:58004] reported to RB as running
+2026-10-31 17:15:13.068 Df SpringBoard[14721:1f1d8] [com.apple.runningboard:process] Starting death monitoring for handle [app<dev.zios.app((null))>:58004]
+2026-10-31 17:15:13.069 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:Process] Adding: <FBApplicationProcess: 0x11bb1ab80; app<dev.zios.app>:58004(v1C385)>
+2026-10-31 17:15:13.070 Df SpringBoard[14721:20c61] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:13.070 Df runningboardd[14724:24852] [com.apple.runningboard:monitor] Calculated state for app<dev.zios.app((null))>: running-active (role: UserInteractiveFocal) (endowments: {(
+    <RBSProcessEndowmentInfo| namespace:com.apple.frontboard.visibility env:(null)  0>
+)})
+2026-10-31 17:15:13.073 Df runningboardd[14724:20629] [com.apple.runningboard:ttl] [app<dev.zios.app((null))>:58004] Set darwin role to: UserInteractiveFocal
+2026-10-31 17:15:13.073 E  runningboardd[14724:20629] [com.apple.runningboard:process] [app<dev.zios.app((null))>:58004] Error 1 setting Carplay mode to 0: Operation not permitted
+2026-10-31 17:15:13.073 Df runningboardd[14724:20629] [com.apple.runningboard:ttl] [app<dev.zios.app((null))>:58004] visiblity is yes
+2026-10-31 17:15:13.073 Df runningboardd[14724:24850] [com.apple.runningboard:assertion] Successfully acquired underlying assertion for [app<dev.zios.app((null))>:58004]
+2026-10-31 17:15:13.075 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:ZStack] _updatePreferences <Switcher>: {
+    activationPolicyForParticipantsBelow: AtMostBG;
+    homeAffordanceDrawingSuppression: Default;
+    associatedSceneIdentifiersToSuppressInSystemAperture: (
+        sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A
+    );
+    associatedBundleIdentifiersToSuppressInSystemAperture: (
+        dev.zios.app
+    );
+    allowsDimmingWhenForegroundInactive: No;
+}
+2026-10-31 17:15:13.075 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:SystemApertureController] Invalidating promoted elements with coversheet suppression NO liquid detection suppression NO proximity reader suppression NO system chrome suppression NO bundleIDs {(
+    "dev.zios.app"
+)} sceneIds {(
+    "sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A"
+)}
+2026-10-31 17:15:13.076 Df mediaremoted[14728:20c64] [com.apple.runningboard:process] Hit the server for a process handle 4ebae860000e294 that resolved to: [app<dev.zios.app((null))>:58004]
+2026-10-31 17:15:13.076 Df mediaremoted[14728:20c64] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:13.080 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:ZStack] Resolved Stack (update(Switcher)) [
+    Highest: ⬇ ,
+    SystemAperture: ⬇ ,
+    BannerItems: ⬇ ,
+    HUD: ⬇ ,
+    TransientOverlayPresentation: ⬇ ,
+    CoverSheet: ⬇ ,
+    Switcher: ownsHomeGesture; FGActive; homeAffordanceDrawingSuppressed: Y->N; suppressedBundles: (none)->dev.zios.app; suppressedScenes: 0->1,
+    HomeScreen: FGActive->BG
+]
+2026-10-31 17:15:13.084 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:TraitsArbiter] [DeviceSceneHandle] Did set interfaceOrientation[1] on scene with identifier[sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A]
+2026-10-31 17:15:13.085 Df locationd[14745:20636] [com.apple.runningboard:process] Hit the server for a process handle 4ebae860000e294 that resolved to: [app<dev.zios.app((null))>:58004]
+2026-10-31 17:15:13.086 Df locationd[14745:20636] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:13.087 Df locationd[14745:23730] [com.apple.locationd.Core:Core] {"msg":"RBS #AppMonitor process monitor update handler invoked", "pid":58004, "bundleID":dev.zios.app, "state":4}
+2026-10-31 17:15:13.087 Df locationd[14745:1fe3e] [com.apple.locationd.Core:Core] {"msg":"RBS #AppMonitor Post Application State Change Notification", "notification":ForegroundRunning, "pid":58004, "bundleId":dev.zios.app}
+2026-10-31 17:15:13.087 Df locationd[14745:23732] [com.apple.locationd.Core:Core] {"msg":"#Warning #ClientResolution the passed keyPath is not registered. Resolving to #nullCKP", "InputCKP":idev.zios.app:}
+2026-10-31 17:15:13.087 Df locationd[14745:23732] [com.apple.locationd.Core:Core] {"msg":"#CLIUA AppMonitor notification", "notification":4, "pid":58004, "bundleId":dev.zios.app, "ClientKey":idev.zios.app:}
+2026-10-31 17:15:13.087 Df locationd[14745:23732] [com.apple.locationd.Core:Core] {"msg":"#CLIUA Marking change", "clientKey":idev.zios.app:, "reason":Process state from RunningBoard, "AssertionLevel":5, "coming":1}
+2026-10-31 17:15:13.087 Df locationd[14745:23732] [com.apple.locationd.Core:Core] {"msg":"#CLIUA updating AssertionRecord", "ClientKey":idev.zios.app:, "AssertionLevel":0}
+2026-10-31 17:15:13.087 Df locationd[14745:23732] [com.apple.locationd.Core:Core] {"msg":"#CLIUA AssertionRecord updated", "ClientKey":idev.zios.app:, "AssertionLevel":5}
+2026-10-31 17:15:13.087 Df locationd[14745:23732] [com.apple.locationd.Core:Core] {"msg":"#CLIUA in-use level changed for client", "ClientKey":idev.zios.app:}
+2026-10-31 17:15:13.087 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:ContinuitySession] modifying scene setting userInterfaceStyle to Light displayIdentity: Main forSceneManagers: Main <SBDeviceApplicationSceneHandle: 0x11dc1c000; sceneID: sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A; scenePointer: 0x0>
+2026-10-31 17:15:13.087 Df locationd[14745:23732] [com.apple.locationd.Core:Core] {"msg":"#Warning #ClientResolution the passed keyPath is not registered. Resolving to #nullCKP", "InputCKP":idev.zios.app:}
+2026-10-31 17:15:13.093 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] No capture application found for the dev.zios.app, launchCameraCapture: NO, isCaptureApplication: NO
+2026-10-31 17:15:13.104 Df SpringBoard[14721:1e489] [com.apple.UserNotifications:Settings] [dev.zios.app] Foreground app will not request ephemeral notifications isAppClip: NO wantsEphemeral notifications: NO
+2026-10-31 17:15:13.104 Df SpringBoard[14721:20c61] [com.apple.UserNotifications:RemoteNotifications] [dev.zios.app] dev.zios.app application state changed to <RBSProcessState| task:running-active debug:none endowmentNamespace:[
+	com.apple.frontboard.visibility
+	]>
+2026-10-31 17:15:13.106 Df SpringBoard[14721:20c61] [com.apple.UserNotifications:RemoteNotifications] [dev.zios.app] Ignore becoming foreground for application without push registration
+2026-10-31 17:15:13.108 Df CoreSimulatorBridge[14751:1bd0b] Launch successful for 'dev.zios.app', pid: 58004
+2026-10-31 17:15:13.113 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] Returning cached initialization context for dev.zios.app
+2026-10-31 17:15:13.124 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:ProcessScene] [0x11b8bee80:(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] Initialized with connection: 0x11bae2f10.
+2026-10-31 17:15:13.124 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:ProcessWorkspace] [app<dev.zios.app>:58004] Registered new scene: <FBUIApplicationWorkspaceScene: 0x11b8bee80; (FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A> (fromRemnant = 0)
+2026-10-31 17:15:13.124 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:Scene] [(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A][1] Scene activated.
+2026-10-31 17:15:13.124 Df SpringBoard[14721:24857] [com.apple.FrontBoard:ProcessWorkspace] [app<dev.zios.app>:58004] Workspace interruption policy did change: reconnect
+2026-10-31 17:15:13.125 Df runningboardd[14724:24851] [com.apple.runningboard:ttl] Acquiring assertion targeting [app<dev.zios.app((null))>:58004] from originator [osservice<com.apple.SpringBoard>:14721] with description <RBSAssertionDescriptor| "com.apple.frontboard.after-life.interrupted" ID:14724-14721-2569 target:58004 attributes:[
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"AfterLife-Interrupted" sourceEnvironment:"(null)">
+	]>
+2026-10-31 17:15:13.125 Df runningboardd[14724:24851] [com.apple.runningboard:ttl] Assertion 14724-14721-2569 (target:[app<dev.zios.app((null))>:58004]) will be created as inactive as originator process has not exited
+2026-10-31 17:15:13.125 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:AppProtection] <BSCompoundAssertion:0x11ee3d5c0> (SBApplicationAppProtectionAssistant: 0x11ee3fac0 - dev.zios.app) acquire for reason:NULL scene acq:0x119e9f680 count:1
+2026-10-31 17:15:13.125 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:AppProtection] Informing <APSystemAppOutlet: 0x108166850> that <APApplication: dev.zios.app> will become foreground visible
+2026-10-31 17:15:13.126 Df SpringBoard[14721:ba19] [com.apple.appprotection:framework] scene will become FG visible for <APApplication: dev.zios.app>
+2026-10-31 17:15:13.129 Df SpringBoard[14721:ba19] [com.apple.appprotection:framework] auth result for <APApplication: dev.zios.app>: true (null)
+2026-10-31 17:15:13.142 Df SpringBoard[14721:ba19] [com.apple.UIKit:KBProxyForwarding] <StateMachine:0x119f0bd00> Created with presentation environment: <0x11b8dc870:<_UISceneKeyboardProxyLayerForwardingPresentationScene: 0x11b8dc870> Tracking scene: <FBScene: 0x11ee21a00; FBSceneManager:sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A>>
+2026-10-31 17:15:13.147 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:KeyboardFocus] [com.apple.springboard] didAddExternalForegroundApplicationSceneHandle pid:58004 scene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A now:<recentPIDs: [58004]; recentSceneIdentityTokensByPID: {58004: [com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A]}>
+2026-10-31 17:15:13.151 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:KeyboardFocus] [coordinator] didAddExternalForegroundApplicationSceneHandle pid:58004 scene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A now:<recentPIDs: [58004]; recentSceneIdentityTokensByPID: {58004: [com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A]}>
+2026-10-31 17:15:13.152 Df SpringBoard[14721:ba19] [com.apple.UIKit:SceneDeactivation] Now tracking: <FBScene: 0x11ee21a00; FBSceneManager:sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A>
+2026-10-31 17:15:13.155 Df SpringBoard[14721:ba19] [com.apple.UIKit:SceneDeactivation] [sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] Setting deactivation reasons to: 'systemAnimation' for reason: scene settings update - settings are eligible for deactivation reasons.
+2026-10-31 17:15:13.176 Df SpringBoard[14721:1e489] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:13.189 Df mediaremoted[14728:20c64] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:13.189 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:Scene] [(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] scene content state changed: preparing
+2026-10-31 17:15:13.189 Df locationd[14745:23730] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:13.190 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:ProcessScene] [0x11b8bee80:(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] Scene lifecycle state did change: Foreground
+2026-10-31 17:15:13.190 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:ProcessScene] [0x11b8bee80:(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] Scene state did change: FV-Focal[100].
+2026-10-31 17:15:13.190 Df runningboardd[14724:24850] [com.apple.runningboard:ttl] Acquiring assertion targeting [app<dev.zios.app((null))>:58004] from originator [osservice<com.apple.SpringBoard>:14721] with description <RBSAssertionDescriptor| "FBWorkspace (FV-Focal[100])" ID:14724-14721-2570 target:58004 attributes:[
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableLPRunReason-Resume" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"Visibility" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableRole-UIFocal" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableJetsamPriority-Foreground" sourceEnvironment:"(null)">
+	]>
+2026-10-31 17:15:13.191 Df runningboardd[14724:24850] [com.apple.runningboard:ttl] Assertion 14724-14721-2570 (target:[app<dev.zios.app((null))>:58004]) will be created as active
+2026-10-31 17:15:13.191 Df runningboardd[14724:24851] [com.apple.runningboard:monitor] Calculated state for app<dev.zios.app((null))>: running-active (role: UserInteractiveFocal) (endowments: {(
+    <RBSProcessEndowmentInfo| namespace:com.apple.frontboard.visibility env:(null)  0>
+)})
+2026-10-31 17:15:13.191 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:ProcessWorkspace] [app<dev.zios.app>:58004] Workspace state did change: XX-None[0] --> FV-Focal[100] (assertion acquired).
+2026-10-31 17:15:13.191 Df SpringBoard[14721:1e489] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:13.201 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:AppSwitcher] [Main (EmbeddedDisplay)] dispatch event:
+<SBTransitionSwitcherModifierEvent: 0x11ef0c8c0; type: MainTransition; transitionID: F880A68F-B69C-439D-9883-784C8F84ABDB; phase: Prepare; animated: YES; fromAppLayout: 0x0; toAppLayout: <SBAppLayout: 0x11dc07c80; primary: dev.zios.app:309CDECB648A; environment: main>; fromEnvironmentMode: home-screen; toEnvironmentMode: application; fromSpaceConfiguration: undefined; toSpaceConfiguration: full; pendingTermination: {(
+)}; morphingPIPLayoutRole: undefined; previousDesktopItems: {(
+)}>
+2026-10-31 17:15:13.207 Df mediaremoted[14728:20c64] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:13.208 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:AppSwitcher] [Main (EmbeddedDisplay)] handle response:
+<SBSwitcherModifierEventResponse: 0x117569020> {
+    <SBSwitcherModifierEventResponse: 0x11756b180> {
+	    <SBSwitcherModifierEventResponse: 0x117569dd0> {
+		    <SBTimerEventSwitcherEventResponse: 0x11756a5e0; delay: 0.240000; reason: kSBTransitionModifierInvalidateAsyncRenderingReason>;
+		    <SBInvalidateAdjustedAppLayoutsSwitcherEventResponse: 0x11756a0a0>;
+		};
+	    <SBTimerEventSwitcherEventResponse: 0x11756a250; delay: 0.060000; reason: kSBFullScreenToHomeCornerRadiusDelayReason>;
+	};
+    <SBSwitcherModifierEventResponse: 0x11756a730> {
+	    <SBUpdateLayoutSwitcherEventResponse: 0x119f09440; updateVisibleItems; layout; style; mode: None>;
+	    <SBRequestFolderSnapshotsSwitcherEventResponse: 0x11756b8a0; snapshotRequested: YES>;
+	    <SBIconOverlayVisibilitySwitcherEventResponse: 0x119f086c0; visible: YES; appLayout: <SBAppLayout: 0x11dc07c80; primary: dev.zios.app:309CDECB648A; environment: main>>;
+	    <SBIconViewVisibilitySwitcherEventResponse: 0x108456440; visib
+2026-10-31 17:15:13.209 Df locationd[14745:20636] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:13.303 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:KeyboardFocus] [com.apple.springboard] coalition says I have focus; enforcing policy: {
+    keyboardFocusTarget: <com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A pid:58004>;
+    selectionPolicy: KeyboardArbiter;
+    shouldSuppressRemoteDeferring: 0;
+}
+2026-10-31 17:15:13.303 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:KeyboardFocus] rules: (keyboardFocus) outbound target changed from:(null) to <com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A pid:58004>
+2026-10-31 17:15:13.303 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:KeyboardFocus] rules: (keyboardFocus) defer (<com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard pid:14721>) -> <com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A pid:58004>
+2026-10-31 17:15:13.303 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:KeyboardFocus] [coordinator] new enforced policy: {
+    keyboardFocusTarget: <com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A pid:58004>;
+    selectionPolicy: KeyboardArbiter;
+    shouldSuppressRemoteDeferring: 0;
+}
+2026-10-31 17:15:13.306 Df SpringBoard[14721:1e489] [com.apple.KeyboardArbiter:Events] set currentFocus PID:58004 sceneIdentity:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A
+2026-10-31 17:15:13.310 Df backboardd[14742:e91d] [com.apple.BackBoard:EventDelivery] new deferring rules for pid:14721: [
+    [14721-13]; <keyboardFocus; builtin; …board.systemappservices/FBSceneManager:com.apple.springboard>; () -> <token: 0x24F86950; pid: 14721>; reason: …gin event deferring in keyboardFocus for window: 0x119f89800,
+    [14721-5]; <system; builtin; SBMainSystemGestures>; () -> <token: 0x400F118F; pid: 14721>; reason: systemGestureSymbol-Main,
+    [14721-4]; <system; builtin>; () -> <token: 0x400F118F; pid: 14721>; reason: systemGestures-Main,
+    [14721-14]; <keyboardFocus; …board.systemappservices/FBSceneManager:com.apple.springboard>; () -> <token: …:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A; pid: 58004>; reason: SpringBoard<com.apple.springboard>: enforcing outbound,
+    [14721-2]; <keyboardFocus; SBKeyboardFocus>; () -> <token: …board.systemappservices/FBSceneManager:com.apple.springboard; pid: 14721>; reason: SB incoming to root scene (symbol),
+    [14721-3]; <systemKeyCommandOverlay>; () -> <token: 0x6558C48A; pid: 14721>; reason: systemKeyCommandOverlayEnviro
+2026-10-31 17:15:13.310 Df backboardd[14742:e91d] [com.apple.BackBoard:EventDelivery] [keyboardFocus 0x101361a90] setRules:forPID(14721): [
+    [14721-13]; <keyboardFocus; builtin; com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard>; () -> <token: 0x24F86950; pid: 14721>; reason: SBWindowScene: 0x106658c80: Begin event deferring in keyboardFocus for window: 0x119f89800,
+    [14721-14]; <keyboardFocus; com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard>; () -> <token: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A; pid: 58004>; reason: SpringBoard<com.apple.springboard>: enforcing outbound,
+    [14721-2]; <keyboardFocus; SBKeyboardFocus>; () -> <token: com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard; pid: 14721>; reason: SB incoming to root scene (symbol),
+    [14721-1]; <keyboardFocus>; () -> <token: com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard; pid: 14721>; reason: SB incoming to root scene
+]
+2026-10-31 17:15:13.310 Df backboardd[14742:e91d] [com.apple.BackBoard:EventDelivery] [keyboardFocus 0x10709f480] setRules:forPID(14721): [
+    [14721-13]; <keyboardFocus; builtin; com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard>; () -> <token: 0x24F86950; pid: 14721>; reason: SBWindowScene: 0x106658c80: Begin event deferring in keyboardFocus for window: 0x119f89800,
+    [14721-14]; <keyboardFocus; com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard>; () -> <token: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A; pid: 58004>; reason: SpringBoard<com.apple.springboard>: enforcing outbound,
+    [14721-2]; <keyboardFocus; SBKeyboardFocus>; () -> <token: com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard; pid: 14721>; reason: SB incoming to root scene (symbol),
+    [14721-1]; <keyboardFocus>; () -> <token: com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard; pid: 14721>; reason: SB incoming to root scene
+]
+2026-10-31 17:15:13.311 Df backboardd[14742:e91d] [com.apple.BackBoard:EventDelivery] chain did update (setDeferringRules) <keyboardFocus; display: null> containsEndOfChain: YES; [
+    <token: com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard; pid: 14721>,
+    <token: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A; pid: 58004>
+]
+2026-10-31 17:15:13.311 Df backboardd[14742:e91d] [com.apple.BackBoard:EventDelivery] chain did update (setDeferringRules) <keyboardFocus; display: builtin> containsEndOfChain: YES; [
+    <token: com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard; pid: 14721>,
+    <token: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A; pid: 58004>
+]
+2026-10-31 17:15:13.371 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:AppSwitcher] [Main (EmbeddedDisplay)] dispatch event:
+<SBTransitionSwitcherModifierEvent: 0x11ef0c8c0; type: MainTransition; transitionID: F880A68F-B69C-439D-9883-784C8F84ABDB; phase: Animate; animated: YES; fromAppLayout: 0x0; toAppLayout: <SBAppLayout: 0x11dc07c80; primary: dev.zios.app:309CDECB648A; environment: main>; fromEnvironmentMode: home-screen; toEnvironmentMode: application; fromSpaceConfiguration: undefined; toSpaceConfiguration: full; pendingTermination: {(
+)}; morphingPIPLayoutRole: undefined; previousDesktopItems: {(
+)}>
+2026-10-31 17:15:13.521 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] Application process state changed for dev.zios.app: <SBApplicationProcessState: 0x119c01060; pid: 58004; taskState: Running; visibility: Foreground>
+2026-10-31 17:15:13.529 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] Returning cached initialization context for dev.zios.app
+2026-10-31 17:15:13.575 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:KeyboardFocus] rules: (scene setting) ADDED keyboardFocus environment to scene: sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A
+2026-10-31 17:15:13.577 Df SpringBoard[14721:ba19] [com.apple.UIKit:SceneDeactivation] [sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] Setting deactivation reasons to: '(none)' for reason: updateAllScenesForBand - Assertion removed.
+2026-10-31 17:15:13.934 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:AppSwitcher] [Main (EmbeddedDisplay)] dispatch event:
+<SBTransitionSwitcherModifierEvent: 0x11b97b640; type: MainTransition; transitionID: F880A68F-B69C-439D-9883-784C8F84ABDB; phase: Complete; animated: YES; fromAppLayout: 0x0; toAppLayout: <SBAppLayout: 0x11dc07c80; primary: dev.zios.app:309CDECB648A; environment: main>; fromEnvironmentMode: home-screen; toEnvironmentMode: application; fromSpaceConfiguration: undefined; toSpaceConfiguration: full; pendingTermination: {(
+)}; morphingPIPLayoutRole: undefined; previousDesktopItems: {(
+)}>
+2026-10-31 17:15:13.937 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:AppSwitcher] [Main (EmbeddedDisplay)] handle response:
+<SBSwitcherModifierEventResponse: 0x11bae3db0> {
+    <SBPreemptAnimationSwitcherEventResponse: 0x11bae00c0>;
+    <SBSwitcherModifierEventResponse: 0x11bae1bf0> {
+	    <SBInvalidateAdjustedAppLayoutsSwitcherEventResponse: 0x11bae3de0>;
+	    <SBSwitcherModifierEventResponse: 0x11bae1ad0> {
+		    <SBRequestFolderSnapshotsSwitcherEventResponse: 0x11bae1620; snapshotRequested: NO>;
+		    <SBIconOverlayVisibilitySwitcherEventResponse: 0x11eefdf00; visible: NO; appLayout: <SBAppLayout: 0x11dc07c80; primary: dev.zios.app:309CDECB648A; environment: main>>;
+		    <SBIconViewVisibilitySwitcherEventResponse: 0x11ed44d20; visible: YES; animationSettings: 0x0; appLayout: <SBAppLayout: 0x11dc07c80; primary: dev.zios.app:309CDECB648A; environment: main>>;
+		    <SBMatchMoveToIconViewSwitcherEventResponse: 0x108583d20; active: NO; appLayout: <SBAppLayout: 0x11dc07c80; primary: dev.zios.app:309CDECB648A; environment: main>>;
+		};
+	};
+}
+2026-10-31 17:15:14.752 Df ZiOS[58004:24bde] [com.apple.BoardServices:XPCErrors] [C:1] Alloc com.apple.frontboard.systemappservices
+2026-10-31 17:15:14.752 Df ZiOS[58004:24bde] [com.apple.xpc:connection] [0x10800ce80] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-10-31 17:15:14.771 Df SpringBoard[14721:20c61] [com.apple.SpringBoard:Common] Fetching initialization context for: dev.zios.app
+2026-10-31 17:15:14.771 Df SpringBoard[14721:20c61] [com.apple.SpringBoard:Common] Returning cached initialization context for dev.zios.app
+2026-10-31 17:15:14.771 Df SpringBoard[14721:20c61] [com.apple.SpringBoard:Common] Returning cached initialization context for dev.zios.app
+2026-10-31 17:15:14.783 Df ZiOS[58004:24af8] [com.apple.xpc:connection] [0x108010e70] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
+2026-10-31 17:15:14.787 Df ZiOS[58004:24af8] [com.apple.UIKit:UIScreen] Evaluated capturing state as 0 on <UIScreen: 0x10800d040> for initial
+2026-10-31 17:15:14.793 Df ZiOS[58004:24af8] [com.apple.UIKit:UIScreen] Evaluated capturing state as 0 on <UIScreen: 0x10800d040> for CADisplay KVO
+2026-10-31 17:15:14.799 Df ZiOS[58004:24af8] (libMobileGestalt.dylib) No persisted cache on this platform.
+2026-10-31 17:15:14.806 Df ZiOS[58004:24af8] [com.apple.Accessibility:AXSupportCommon] Read CategoryName: per-app = 1, category name = (null)
+2026-10-31 17:15:14.807 Df ZiOS[58004:24af8] [com.apple.Accessibility:AXSupportCommon] Read CategoryName: per-app = 0, category name = (null)
+2026-10-31 17:15:14.986 A  ZiOS[58004:24be1] (CoreFoundation) Loading Preferences From User Session CFPrefsD
+2026-10-31 17:15:15.006 Df ZiOS[58004:24af8] [com.apple.UIKit:Application] Deactivation reason added: 10; deactivation reasons: 0 -> 1024; animating application lifecycle event: 0
+2026-10-31 17:15:15.009 Df ZiOS[58004:24af8] [com.apple.runningboard:connection] Initializing connection
+2026-10-31 17:15:15.009 Df ZiOS[58004:24af8] [com.apple.runningboard:process] Removing all cached process handles
+2026-10-31 17:15:15.009 Df ZiOS[58004:24be1] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
+2026-10-31 17:15:15.009 Df ZiOS[58004:24af8] [com.apple.BoardServices:Injection] activating monitor for service com.apple.frontboard.open
+2026-10-31 17:15:15.010 Df ZiOS[58004:24be1] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
+2026-10-31 17:15:15.010 Df ZiOS[58004:24be1] [com.apple.xpc:connection] [0x108554c80] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+2026-10-31 17:15:15.010 Df backboardd[14742:16511] [com.apple.iohid:default] Connection added: IOHIDEventSystemConnection uuid:EED3A4B2-1B77-45C5-A0E1-3DDCB82740D0 pid:58004 process:ZiOS type:Passive entitlements:0x0 caller:BackBoardServices: ___getHIDEventSystemClient_block_invoke + 296 attributes:{
+    HighFrequency = 0;
+    bundleID = "dev.zios.app";
+    pid = 58004;
+} state:0x0 events:0 mask:0x0 dropped:0 dropStatus:0 droppedMask:0x0 lastDroppedTime:NONE
+2026-10-31 17:15:15.010 Df backboardd[14742:16511] [com.apple.BackBoard:HID] Adding client connection: <BKHIDClientConnection: 0x108b2da80; IOHIDEventSystemConnectionRef: 0x101345600; vpid: 58004(v1C385); taskPort: 0x1B9CF; bundleID: dev.zios.app> for client: IOHIDEventSystemConnection uuid:EED3A4B2-1B77-45C5-A0E1-3DDCB82740D0 pid:58004 process:ZiOS type:Passive entitlements:0x0 caller:BackBoardServices: ___getHIDEventSystemClient_block_invoke + 296 attributes:{
+    HighFrequency = 0;
+    bundleID = "dev.zios.app";
+    pid = 58004;
+} state:0x0 events:0 mask:0x0 dropped:0 dropStatus:0 droppedMask:0x0 lastDroppedTime:NONE
+2026-10-31 17:15:15.012 Df ZiOS[58004:24af8] [com.apple.BoardServices:Injection] activating monitor for service com.apple.frontboard.workspace-service
+2026-10-31 17:15:15.012 Df ZiOS[58004:24af8] [com.apple.FrontBoard:Common] FBSWorkspace registering source: com.apple.frontboard.systemappservices
+2026-10-31 17:15:15.013 Df runningboardd[14724:24851] [com.apple.runningboard:connection] Setting client for [app<dev.zios.app((null))>:58004] as ready
+2026-10-31 17:15:15.014 A  ZiOS[58004:24bde] (RunningBoardServices) didChangeInheritances
+2026-10-31 17:15:15.016 Df ZiOS[58004:24be1] [com.apple.runningboard:connection] Handshake succeeded
+2026-10-31 17:15:15.016 Df ZiOS[58004:24be1] [com.apple.runningboard:connection] Identity resolved as app<dev.zios.app((null))>
+2026-10-31 17:15:15.020 Df ZiOS[58004:24af8] [com.apple.FrontBoard:Common] FBSWorkspace connected to endpoint : <BSServiceConnectionEndpoint: 0x108520be0; target: com.apple.frontboard.systemappservices; service: com.apple.frontboard.workspace-service>
+2026-10-31 17:15:15.020 Df ZiOS[58004:24be4] [com.apple.UIKit:BackgroundTask] Creating new assertion because there is no existing background assertion.
+2026-10-31 17:15:15.021 Df ZiOS[58004:24af8] [com.apple.FrontBoard:Common] <FBSWorkspaceScenesClient:0x1084f0c80 com.apple.frontboard.systemappservices> attempting immediate handshake from activate
+2026-10-31 17:15:15.021 Df ZiOS[58004:24be4] [com.apple.UIKit:BackgroundTask] Creating new background assertion
+2026-10-31 17:15:15.021 Df ZiOS[58004:24be4] [com.apple.UIKit:BackgroundTask] Created new background assertion <BKSProcessAssertion: 0x1085c42d0>
+2026-10-31 17:15:15.021 Df SpringBoard[14721:24afc] [com.apple.FrontBoard:ProcessWorkspace] [app<dev.zios.app>:58004] Connection established.
+2026-10-31 17:15:15.021 Df runningboardd[14724:24852] [com.apple.runningboard:ttl] Acquiring assertion targeting [app<dev.zios.app((null))>:58004] from originator [app<dev.zios.app((null))>:58004] with description <RBSAssertionDescriptor| "Shared Background Assertion 0 for dev.zios.app" ID:14724-58004-2571 target:58004 attributes:[
+	<RBSLegacyAttribute| requestedReason:FinishTask reason:FinishTask flags:( PreventTaskSuspend )>,
+	<RBSAcquisitionCompletionAttribute| policy:AfterValidation>
+	]>
+2026-10-31 17:15:15.021 Df runningboardd[14724:24852] [com.apple.runningboard:ttl] Assertion 14724-58004-2571 (target:[app<dev.zios.app((null))>:58004]) will be created as inactive as start-time-defining assertions exist
+2026-10-31 17:15:15.021 Df SpringBoard[14721:24afc] [com.apple.FrontBoard:ProcessWorkspace] [app<dev.zios.app>:58004] created proxy of <BSXPCServiceConnectionProxy<FBSWorkspaceServiceServerInterface>: 0x108641d50>
+2026-10-31 17:15:15.021 Df SpringBoard[14721:20c61] [com.apple.FrontBoard:Process] [app<dev.zios.app>:58004] Connection to remote process established!
+2026-10-31 17:15:15.021 Df ZiOS[58004:24be4] [com.apple.UIKit:BackgroundTask] Incrementing reference count for background assertion <BKSProcessAssertion: 0x1085c42d0>
+2026-10-31 17:15:15.022 Df ZiOS[58004:24be4] [com.apple.UIKit:BackgroundTask] Created background task <_UIBackgroundTaskInfo: 0x108449340>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 1640 (elapsed = 0).
+2026-10-31 17:15:15.022 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UIApplicationSceneKeyboardSettings on FBSSceneSettings
+2026-10-31 17:15:15.022 Df SpringBoard[14721:20c61] [com.apple.FrontBoard:ProcessScene] [0x11b8bee80:(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] Sending scene action [Logical Activate][0x374b] to process 0x11bb1ab80 (watchdog: 598.05s)
+2026-10-31 17:15:15.022 Df SpringBoard[14721:20c61] [com.apple.FrontBoard:ProcessScene] [0x11b8bee80:(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] Sending scene create.
+2026-10-31 17:15:15.023 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] Application process state changed for dev.zios.app: <SBApplicationProcessState: 0x119c029a0; pid: 58004; taskState: Running; visibility: Foreground>
+2026-10-31 17:15:15.024 Df ZiOS[58004:24af8] [com.apple.FrontBoard:Common] <FBSWorkspaceScenesClient:0x1084f0c80 com.apple.frontboard.systemappservices> sent handshake
+2026-10-31 17:15:15.024 Df ZiOS[58004:24af8] [com.apple.runningboard:general] Added observer for process assertions expiration warning: <_RBSExpirationWarningClient: 0x108520f40>
+2026-10-31 17:15:15.026 Df SpringBoard[14721:20c61] [com.apple.FrontBoard:ProcessWorkspace] received incoming handshake : process=<FBApplicationProcess: 0x11bb1ab80; app<dev.zios.app>:58004(v1C385); taskState: Running; visibility: Foreground> remote=<BSAuditToken: 0x11eec7e80; AUID: 501; EUID: 501; EGID: 20; RUID: 501; RGID: 20; PID: 58004; ASID: 100014; PIDVersion: 115589> remnants=0
+2026-10-31 17:15:15.026 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e65e00-com.apple.SpringBoard.SceneWorkspace.PrototypeTools] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.026 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106d28a80-com.apple.SpringBoard.SceneWorkspace.DruidUI] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.026 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e653c0-com.apple.SpringBoard.SceneWorkspace.FullKeyboardAccessUI] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.026 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e660c0-com.apple.SpringBoard.SceneWorkspace.SiriHUD] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.026 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e65ca0-com.apple.SpringBoard.SceneWorkspace.AudioHUD] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.026 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e659c0-com.apple.SpringBoard.SceneWorkspace.PerfPowerHUD] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.026 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e640c0-com.apple.SpringBoard.SceneWorkspace.InputUI] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.026 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e65f80-com.apple.SpringBoard.SceneWorkspace.GlitchHUD] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.027 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e64ec0-com.apple.SpringBoard.SceneWorkspace.AssistiveTouchUI] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.027 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x1067f3960-com.apple.SpringBoard.SceneWorkspace.OverlayUI] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.027 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e652a0-com.apple.SpringBoard.SceneWorkspace.VoiceControlUI] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.029 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e656c0-com.apple.SpringBoard.SceneWorkspace.EyedropperUI] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.030 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e65b40-com.apple.SpringBoard.SceneWorkspace.InternalPerfPowerHUD] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.030 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e65860-com.apple.SpringBoard.SceneWorkspace.Moments] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.030 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e64d40-com.apple.SpringBoard.SceneWorkspace.AccessibilityUIServerUI] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.030 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] SceneWorkspaceDelegate[0x106e64320-com.apple.SpringBoard.SceneWorkspace.LiveTranscriptionUI] client did connect with handshake: <FBSceneClientHandshake:0x119c01760; [app<dev.zios.app((null))>:58004] remnants=0>
+2026-10-31 17:15:15.048 Df ZiOS[58004:24af8] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
+2026-10-31 17:15:15.049 Df ZiOS[58004:24af8] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-10-31 17:15:15.049 Df ZiOS[58004:24af8] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-10-31 17:15:15.049 Df ZiOS[58004:24af8] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-10-31 17:15:15.052 Df ZiOS[58004:24af8] [com.apple.UIKit:Application] Deactivation reason added: 11; deactivation reasons: 1024 -> 3072; animating application lifecycle event: 0
+2026-10-31 17:15:15.055 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneOcclusionSettings> on FBSSceneSettings
+2026-10-31 17:15:15.059 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneInterfaceProtectionSettings> on FBSSceneSettings
+2026-10-31 17:15:15.064 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneLayoutPreferencesHostSettingsExtension on FBSSceneSettings
+2026-10-31 17:15:15.068 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneSafeAreaSettingsExtension on FBSSceneSettings
+2026-10-31 17:15:15.068 Df ZiOS[58004:24af8] [com.apple.UIKit:Application] Deactivation reason removed: 10; deactivation reasons: 3072 -> 2048; animating application lifecycle event: 0
+2026-10-31 17:15:15.082 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneLayoutPreferenceClientSettingsExtension on FBSSceneClientSettings
+2026-10-31 17:15:15.089 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UIHomeAffordanceHostSceneSettings> on FBSSceneSettings
+2026-10-31 17:15:15.092 Df ZiOS[58004:24af8] [com.apple.UIKit:EventBus] Event Timing Profile for Touch: not found, path="/System/Library/EventTimingProfiles/Sim.Touch.plist"
+2026-10-31 17:15:15.092 Df ZiOS[58004:24af8] [com.apple.UIKit:EventBus] Event Timing Profile for Pencil: not found, path="/System/Library/EventTimingProfiles/Sim.Pencil.plist"
+2026-10-31 17:15:15.092 Df ZiOS[58004:24af8] [com.apple.UIKit:UpdateScheduler] Selected display: name=LCD (PurpleMain), id=1
+2026-10-31 17:15:15.092 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISystemShellSceneHostingEnvironmentSettings on FBSSceneSettings
+2026-10-31 17:15:15.093 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneRenderingEnvironmentSettings on FBSSceneSettings
+2026-10-31 17:15:15.098 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneRenderingEnvironmentClientSettings> on FBSSceneClientSettings
+2026-10-31 17:15:15.098 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneTransitioningHostSettings> on FBSSceneSettings
+2026-10-31 17:15:15.100 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneFocusSystemSettings> on FBSSceneSettings
+2026-10-31 17:15:15.101 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneOrientationSettingsExtension on FBSSceneSettings
+2026-10-31 17:15:15.102 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneOrientationClientSettingsExtension on FBSSceneClientSettings
+2026-10-31 17:15:15.105 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneWindowingControlClientSettings on FBSSceneClientSettings
+2026-10-31 17:15:15.112 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingContentSizePreferenceClientSettings> on FBSSceneClientSettings
+2026-10-31 17:15:15.114 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneHostingTraitCollectionPropagationSettings on FBSSceneSettings
+2026-10-31 17:15:15.126 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingSheetPresentationSettings> on FBSSceneSettings
+2026-10-31 17:15:15.131 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingSheetPresentationClientSettings> on FBSSceneClientSettings
+2026-10-31 17:15:15.132 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingEventDeferringSettings> on FBSSceneSettings
+2026-10-31 17:15:15.135 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <UIKit__UITypedKeyValueSceneSettings> on FBSSceneSettings
+2026-10-31 17:15:15.136 Df ZiOS[58004:24af8] [com.apple.xpc:connection] [0x108554f00] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
+2026-10-31 17:15:15.137 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <UIKit__UITypedKeyValueSceneSettings> on FBSSceneClientSettings
+2026-10-31 17:15:15.137 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingViewControllerPreferencePropagationClientSettings> on FBSSceneClientSettings
+2026-10-31 17:15:15.138 Df ZiOS[58004:24be4] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneZoomTransitionSettings> on FBSSceneSettings
+2026-10-31 17:15:15.141 Df ZiOS[58004:24c37] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneSettingsCore on FBSSceneSettings
+2026-10-31 17:15:15.165 Df ZiOS[58004:24c37] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneClientSettingsCore on FBSSceneClientSettings
+2026-10-31 17:15:15.211 Df ZiOS[58004:24c37] [com.apple.FrontBoard:SceneExtension] UIMutableApplicationSceneSettings setting counterpart class: UIApplicationSceneSettings
+2026-10-31 17:15:15.211 Df ZiOS[58004:24c37] [com.apple.FrontBoard:SceneExtension] UIMutableApplicationSceneClientSettings setting counterpart class: UIApplicationSceneClientSettings
+2026-10-31 17:15:15.211 Df ZiOS[58004:24c37] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneTransitionContextCore on FBSSceneTransitionContext
+2026-10-31 17:15:15.230 Df ZiOS[58004:24af8] [com.apple.BoardServices:XPCErrors] [C:2] Alloc com.apple.backboard.hid-services.xpc
+2026-10-31 17:15:15.230 Df ZiOS[58004:24af8] [com.apple.xpc:connection] [0x1085552c0] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-10-31 17:15:15.236 Df runningboardd[14724:24851] [com.apple.runningboard:ttl] Acquiring assertion targeting [app<dev.zios.app((null))>:58004] from originator [app<dev.zios.app((null))>:58004] with description <RBSAssertionDescriptor| "app_launch_measurement: pageins recording enabled" ID:14724-58004-2572 target:58004 attributes:[
+	<RBSDomainAttribute| domain:"com.apple.pagein-prefetching" name:"LaunchPrefetch" sourceEnvironment:"(null)">
+	]>
+2026-10-31 17:15:15.236 Df runningboardd[14724:24851] [com.apple.runningboard:ttl] Assertion 14724-58004-2572 (target:[app<dev.zios.app((null))>:58004]) will be created as active
+2026-10-31 17:15:15.236 Df ZiOS[58004:24af8] [com.apple.app_launch_measurement:ApplicationLaunch] alm_acquire_pageins_recording_assertion: acquired pageins recording assertion!
+2026-10-31 17:15:15.236 Df runningboardd[14724:24850] [com.apple.runningboard:monitor] Calculated state for app<dev.zios.app((null))>: running-active (role: UserInteractiveFocal) (endowments: {(
+    <RBSProcessEndowmentInfo| namespace:com.apple.frontboard.visibility env:(null)  0>
+)})
+2026-10-31 17:15:15.237 Df SpringBoard[14721:20c61] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:15.237 Df ZiOS[58004:24be4] [com.apple.BackBoard:EventDelivery] BKSHIDEventDeliveryManager - connection activation
+2026-10-31 17:15:15.238 Df locationd[14745:20636] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:15.238 Df mediaremoted[14728:20c64] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:15.244 Df ZiOS[58004:24af8] [com.apple.UIKit:BackgroundTask] Will add backgroundTask with taskName: Persistent SceneSession Map Update, expirationHandler: <__NSGlobalBlock__: 0x1e78c84e8>
+2026-10-31 17:15:15.245 Df ZiOS[58004:24af8] [com.apple.UIKit:BackgroundTask] Reusing background assertion <BKSProcessAssertion: 0x1085c42d0>
+2026-10-31 17:15:15.245 Df ZiOS[58004:24af8] [com.apple.UIKit:BackgroundTask] Incrementing reference count for background assertion <BKSProcessAssertion: 0x1085c42d0>
+2026-10-31 17:15:15.245 Df ZiOS[58004:24af8] [com.apple.UIKit:BackgroundTask] Created background task <_UIBackgroundTaskInfo: 0x1086a9800>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 1640 (elapsed = 0).
+2026-10-31 17:15:15.246 Df ZiOS[58004:24af8] [com.apple.UIKit:Application] Deactivation reason added: 5; deactivation reasons: 2048 -> 2080; animating application lifecycle event: 1
+2026-10-31 17:15:15.247 Df ZiOS[58004:24af8] [com.apple.UIKit:InterfaceStyle] Should send trait collection or coordinate space update, interface style 1 -> 1, <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A)
+2026-10-31 17:15:15.251 Df ZiOS[58004:24af8] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A)
+2026-10-31 17:15:15.252 Df ZiOS[58004:24af8] [com.apple.UIKit:HomeAffordanceObservation] Initializing: <_UIHomeAffordanceSceneNotifier: 0x1086c1730>; with scene: <UIWindowScene: 0x10801cbb0>
+2026-10-31 17:15:15.253 Df ZiOS[58004:24af8] [com.apple.BacklightServices:scenes] 0x108446610 setDelegate:<0x1084466a0 _UIBacklightEnvironment> hasDelegate:YES for environment:sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A
+2026-10-31 17:15:15.253 Df ZiOS[58004:24af8] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A)
+2026-10-31 17:15:15.254 Df ZiOS[58004:24af8] [com.apple.UIKit:EventDeferring] [0x1086c08c0] Initialized with scene: <UIWindowScene: 0x10801cbb0>; behavior: <_UIEventDeferringBehavior_iOS: 0x108769040>; availableForProcess: 1, systemShellManagesKeyboardFocus: 1
+2026-10-31 17:15:15.257 Df ZiOS[58004:24be4] [com.apple.BackBoard:EventDelivery] BKSHIDEventObserver - connection activation
+2026-10-31 17:15:15.257 Df ZiOS[58004:24af8] [com.apple.BackBoard:EventDelivery] policyStatus:<BKSHIDEventDeliveryPolicyObserver: 0x10848a760; process scope; status: target> was:none
+2026-10-31 17:15:15.257 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyWindow] Setting default evaluation strategy for UIUserInterfaceIdiomPhone to LastOneWins
+2026-10-31 17:15:15.257 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyWindow] Scene target of keyboard event deferring environment did change: 1; scene: UIWindowScene: 0x10801cbb0; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A
+2026-10-31 17:15:15.257 Df ZiOS[58004:24af8] [com.apple.UIKit:EventDeferring] [0x1086c08c0] Scene target of event deferring environments did update: scene: 0x10801cbb0; current systemShellManagesKeyboardFocus: 1; systemShellManagesKeyboardFocusForScene: 1; eligibleForRecordRemoval: 1;
+2026-10-31 17:15:15.257 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyWindow] Scene became target of keyboard event deferring environment: UIWindowScene: 0x10801cbb0; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A
+2026-10-31 17:15:15.257 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyWindow] Stack[KeyWindow] 0x1084468e0: Taking no further action for migration from LastOneWins -> SystemShellManaged as there are no scenes
+2026-10-31 17:15:15.257 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyWindow] Setting default evaluation strategy for UIUserInterfaceIdiomPhone to SystemShellManaged
+2026-10-31 17:15:15.257 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyWindow] Key window needs update: 0; currentKeyWindowScene: 0x0; evaluatedKeyWindowScene: 0x10801cbb0; currentApplicationKeyWindow: 0x0; evaluatedApplicationKeyWindow: 0x0; reason: UIWindowScene: 0x10801cbb0: Window scene became target of keyboard environment
+2026-10-31 17:15:15.257 Df ZiOS[58004:24af8] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A)
+2026-10-31 17:15:15.258 Df ZiOS[58004:24af8] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A)
+2026-10-31 17:15:15.261 Df ZiOS[58004:24af8] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A)
+2026-10-31 17:15:15.419 Df ZiOS[58004:24af8] [com.apple.xpc:connection] [0x1085561c0] activating connection: mach=true listener=false peer=false name=com.apple.metal.simulator
+2026-10-31 17:15:15.420 Df ZiOS[58004:24af8] [com.apple.xpc:connection] [0x108556300] activating connection: mach=true listener=false peer=false name=com.apple.metal.simulator
+2026-10-31 17:15:15.421 Df ZiOS[58004:24af8] [com.apple.xpc:connection] [0x108556440] activating connection: mach=true listener=false peer=false name=com.apple.metal.simulator
+2026-10-31 17:15:15.449 Df ZiOS[58004:24bc6] [dev.zios.app:zed] [ios_bridge::memory] memory warning (Watchdog): footprint 20 MB
+2026-10-31 17:15:15.473 Df ZiOS[58004:24af8] [com.apple.UIKit:Orientation] <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A) Scene updated orientation preferences: none -> ( Pu Ll Lr )
+2026-10-31 17:15:15.485 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyWindow] Key window API is scene-level: YES
+2026-10-31 17:15:15.485 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyWindow] UIWindowScene: 0x10801cbb0: Window became key in scene: UIWindow: 0x1085d0000; contextId: 0x3C5F0EEB: reason: UIWindowScene: 0x10801cbb0: Window requested to become key in scene: 0x1085d0000
+2026-10-31 17:15:15.485 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyWindow] Key window needs update: 1; currentKeyWindowScene: 0x0; evaluatedKeyWindowScene: 0x10801cbb0; currentApplicationKeyWindow: 0x0; evaluatedApplicationKeyWindow: 0x1085d0000; reason: UIWindowScene: 0x10801cbb0: Window requested to become key in scene: 0x1085d0000
+2026-10-31 17:15:15.485 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyWindow] Window did become application key: UIWindow: 0x1085d0000; contextId: 0x3C5F0EEB; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A
+2026-10-31 17:15:15.485 Df ZiOS[58004:24af8] [com.apple.UIKit:EventDeferring] [0x1086c08c0] Begin local event deferring requested for token: 0x108489320; environments: 1; reason: UIWindowScene: 0x10801cbb0: Begin event deferring in keyboardFocus for window: 0x1085d0000
+2026-10-31 17:15:15.486 Df backboardd[14742:24b33] [com.apple.BackBoard:EventDelivery] new deferring rules for pid:58004: [[58004-1]; <keyboardFocus; builtin; …:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A>; () -> <token: 0x3C5F0EEB; pid: 58004>; reason: …gin event deferring in keyboardFocus for window: 0x1085d0000]
+2026-10-31 17:15:15.486 Df backboardd[14742:24b33] [com.apple.BackBoard:EventDelivery] [keyboardFocus 0x101361a90] setRules:forPID(58004): [[58004-1]; <keyboardFocus; builtin; com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A>; () -> <token: 0x3C5F0EEB; pid: 58004>; reason: UIWindowScene: 0x10801cbb0: Begin event deferring in keyboardFocus for window: 0x1085d0000]
+2026-10-31 17:15:15.486 Df backboardd[14742:24b33] [com.apple.BackBoard:EventDelivery] [keyboardFocus 0x10709f480] setRules:forPID(58004): [[58004-1]; <keyboardFocus; builtin; com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A>; () -> <token: 0x3C5F0EEB; pid: 58004>; reason: UIWindowScene: 0x10801cbb0: Begin event deferring in keyboardFocus for window: 0x1085d0000]
+2026-10-31 17:15:15.487 Df backboardd[14742:24b33] [com.apple.BackBoard:EventDelivery] chain did update (setDeferringRules) <keyboardFocus; display: null; compatibilityDisplay: builtin> containsEndOfChain: YES; [
+    <token: com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard; pid: 14721>,
+    <token: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A; pid: 58004>,
+    <token: 0x3C5F0EEB; pid: 58004>
+]
+2026-10-31 17:15:15.487 Df backboardd[14742:24b33] [com.apple.BackBoard:EventDelivery] chain did update (setDeferringRules) <keyboardFocus; display: builtin> containsEndOfChain: YES; [
+    <token: com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard; pid: 14721>,
+    <token: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A; pid: 58004>,
+    <token: 0x3C5F0EEB; pid: 58004>
+]
+2026-10-31 17:15:15.488 Df ZiOS[58004:24c37] [com.apple.BackBoard:EventDelivery] policyStatus:<BKSHIDEventDeliveryPolicyObserver: 0x10848a760; token: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A; status: ancestor> was:target
+2026-10-31 17:15:15.513 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] Reloading input views for key-window scene responder: <GPUIMetalView: 0x108658380; frame = (0 0; 393 852); > force:N
+2026-10-31 17:15:15.514 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _reloadInputViewsForKeyWindowSceneResponder: 1 force: 0, fromBecomeFirstResponder: 1 (automaticKeyboard: 1, reloadIdentifier: 29F27475-BECC-49FE-8E9B-39BFB08E8866)
+2026-10-31 17:15:15.514 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder: <GPUIMetalView: 0x108658380; frame = (0 0; 393 852); >, automaticKeyboard: 1, force: 0
+2026-10-31 17:15:15.514 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, found custom inputView: <(null): 0x0>, customInputViewController: <(null): 0x0>
+2026-10-31 17:15:15.514 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, found inputAccessoryView: <(null): 0x0>
+2026-10-31 17:15:15.514 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, responderRequiresKeyboard 0 (automaticKeyboardEnabled: 1, activeInstance: <(null): 0x0>, self.isOnScreen: 0, requiresKBWhenFirstResponder: 0)
+2026-10-31 17:15:15.514 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, useKeyboard 0 (allowsSystemInputView: 1, !inputView <(null): 0x0>, responderRequiresKeyboard 0)
+2026-10-31 17:15:15.515 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, configuring _responderWithoutAutomaticAppearanceEnabled: <(null): 0x0> (_automaticAppearEnabled: 1)
+2026-10-31 17:15:15.515 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, needsIVPlaceholder: 0, needsIAVPlaceholder: 0, needsInputSetWithPlaceholder: 0
+2026-10-31 17:15:15.515 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder returning: <<UIInputViewSet: 0x10875c0c0>; (empty)>
+2026-10-31 17:15:15.532 Df ZiOS[58004:24af8] [com.apple.UIKit:TrackingElementWindowController] Change from input view set: (null)
+2026-10-31 17:15:15.532 Df ZiOS[58004:24af8] [com.apple.UIKit:TrackingElementWindowController] Change to input view set: (null)
+2026-10-31 17:15:15.533 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardLayoutGuide] _moveGuideOffscreenAtEdge: 4
+2026-10-31 17:15:15.533 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardLayoutGuide] changeOffsetConstants: offset is changing to {0, 0} [previous offset: {-1, -1}]
+2026-10-31 17:15:15.534 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardLayoutGuide] changeSizingConstants: size is changing [not transitioning] to {393, 0} [previous size: {1, 0}]
+2026-10-31 17:15:15.566 Df ZiOS[58004:24be4] [com.apple.xpc:connection] [0x1087df840] activating connection: mach=true listener=false peer=false name=com.apple.fontservicesd
+2026-10-31 17:15:15.576 Df backboardd[14742:24b33] [com.apple.BackBoard:TouchEvents] new scene host settings: contextID:3C5F0EEB <sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A> unspecified -> foreground
+2026-10-31 17:15:15.602 Df ZiOS[58004:24af8] [dev.zios.app:zed] [gpui_apple::text_system] skipping duplicate font "System Font Regular Italic Semibold Italic" with PostScript name ".SFUI-SemiboldItalic" in family ".AppleSystemUIFont"
+2026-10-31 17:15:15.602 Df ZiOS[58004:24af8] [dev.zios.app:zed] [gpui_apple::text_system] skipping duplicate font "System Font Semibold" with PostScript name ".SFUI-Semibold" in family ".AppleSystemUIFont"
+2026-10-31 17:15:15.679 Df ZiOS[58004:24af8] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A)
+2026-10-31 17:15:15.682 Df ZiOS[58004:24af8] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A  persistentID: E946A395-7D92-449C-BC7D-309CDECB648A
+2026-10-31 17:15:15.682 Df ZiOS[58004:24af8] [com.apple.UIKit:Application] Ignoring already applied deactivation reason: 5; deactivation reasons: 2080
+2026-10-31 17:15:15.682 Df ZiOS[58004:24af8] [com.apple.UIKit:Application] Deactivation reason added: 12; deactivation reasons: 2080 -> 6176; animating application lifecycle event: 1
+2026-10-31 17:15:15.682 Df ZiOS[58004:24af8] [com.apple.UIKit:Application] Deactivation reason removed: 11; deactivation reasons: 6176 -> 4128; animating application lifecycle event: 1
+2026-10-31 17:15:15.683 Df ZiOS[58004:24af8] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneIntelligenceSupportSettings> on FBSSceneSettings
+2026-10-31 17:15:15.698 Df ZiOS[58004:24af8] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A)
+2026-10-31 17:15:15.698 Df ZiOS[58004:24c37] [com.apple.UIIntelligenceSupport:xpc] establishing connection to agent
+2026-10-31 17:15:15.699 Df backboardd[14742:24b33] [com.apple.BackBoard:TouchEvents] new scene host settings: contextID:146702B3 <sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A> unspecified -> foreground
+2026-10-31 17:15:15.700 Df ZiOS[58004:24c37] [com.apple.xpc:session] [0x10b4555e0] Session created.
+2026-10-31 17:15:15.700 Df ZiOS[58004:24c37] [com.apple.xpc:session] [0x10b4555e0] Session created from connection [0x10b590140]
+2026-10-31 17:15:15.700 Df ZiOS[58004:24c37] [com.apple.xpc:connection] [0x10b590140] activating connection: mach=true listener=false peer=false name=com.apple.uiintelligencesupport.agent
+2026-10-31 17:15:15.700 Df ZiOS[58004:24c37] [com.apple.xpc:session] [0x10b4555e0] Session activated
+2026-10-31 17:15:15.703 Df SpringBoard[14721:20c61] [com.apple.FrontBoard:ProcessScene] [0x11b8bee80:(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] Scene action [Logical Activate][0x374b] completed with success: 1
+2026-10-31 17:15:15.703 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:Scene] [(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] scene content state changed: ready
+2026-10-31 17:15:15.705 Df ZiOS[58004:24af8] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:1 [2FAB26FF-280A-4A06-8EBC-D66BC7152786] (reporting strategy default)>
+2026-10-31 17:15:15.705 Df runningboardd[14724:24851] [com.apple.runningboard:ttl] Acquiring assertion targeting [app<dev.zios.app((null))>:58004](UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A) from originator [osservice<com.apple.SpringBoard>:14721] with description <RBSAssertionDescriptor| "injecting  inherited from 'UIScene:com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard'" ID:14724-14721-2573 target:58004<UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A> attributes:[
+	<RBSHereditaryGrant| endowmentNamespace:com.apple.boardservices.endpoint-injection UIScene:com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard>,
+	<RBSHereditaryGrant| endowmentNamespace:com.apple.frontboard.visibility UIScene:com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard>
+	]>
+2026-10-31 17:15:15.705 Df ZiOS[58004:24af8] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:2 [AED9A5BB-BD50-4B0C-866A-E9F1A7FEA477] (reporting strategy default)>
+2026-10-31 17:15:15.705 Df runningboardd[14724:24851] [com.apple.runningboard:ttl] Assertion 14724-14721-2573 (target:[app<dev.zios.app((null))>:58004](UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A)) will be created as active
+2026-10-31 17:15:15.706 Df ZiOS[58004:24af8] [com.apple.network:activity] Set activity <nw_activity 50:1 [2FAB26FF-280A-4A06-8EBC-D66BC7152786] (reporting strategy default)> as the global parent
+2026-10-31 17:15:15.706 Df ZiOS[58004:24af8] [com.apple.UIKit:BackgroundTask] Ending background task with UIBackgroundTaskIdentifier: 1
+2026-10-31 17:15:15.706 Df ZiOS[58004:24af8] [com.apple.UIKit:BackgroundTask] Ending task with identifier 1 and description: <_UIBackgroundTaskInfo: 0x108449340>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 1640 (elapsed = 0), _expireHandler: (null)
+2026-10-31 17:15:15.706 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:Scene] [(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] Setting parent scene: (FBSceneManager):com.apple.springboard
+2026-10-31 17:15:15.706 Df ZiOS[58004:24af8] [com.apple.UIKit:BackgroundTask] Decrementing reference count for assertion <BKSProcessAssertion: 0x1085c42d0> (used by background task with identifier 1: <_UIBackgroundTaskInfo: 0x108449340>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 1640 (elapsed = 0))
+2026-10-31 17:15:15.706 Df ZiOS[58004:24af8] [com.apple.UIKit:EventDeferring] [0x1086c08c0] Scene target of event deferring environments did update: scene: 0x10801cbb0; current systemShellManagesKeyboardFocus: 1; systemShellManagesKeyboardFocusForScene: 1; eligibleForRecordRemoval: 1;
+2026-10-31 17:15:15.706 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyWindow] Scene became target of keyboard event deferring environment: UIWindowScene: 0x10801cbb0; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A
+2026-10-31 17:15:15.706 Df ZiOS[58004:24be4] [com.apple.CoreAnalytics:client] No XPC connection in Simulator
+2026-10-31 17:15:15.706 Df ZiOS[58004:24af8] [com.apple.Accessibility:AXCommon] Read Per-App on Init: Smart invert = (null)
+2026-10-31 17:15:15.707 Df runningboardd[14724:24852] [com.apple.runningboard:monitor] Calculated state for app<dev.zios.app((null))>: running-active (role: UserInteractiveFocal) (endowments: {(
+    <RBSProcessEndowmentInfo| namespace:com.apple.frontboard.visibility env:(null)  0>,
+    <RBSProcessEndowmentInfo| namespace:com.apple.frontboard.visibility env:UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A payload: 5755073674419036818>
+)})
+2026-10-31 17:15:15.707 Df runningboardd[14724:24851] [com.apple.runningboard:connection] Inheritance changeset: <RBSInheritanceChangeSet| gained:{(
+    <RBSInheritance| environment:UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A name:com.apple.frontboard.visibility origID:14724-14721-2573 payload 5755073674419036818>
+)} lost:{(
+)}>
+2026-10-31 17:15:15.707 Df ZiOS[58004:24af8] [com.apple.UIKit:UpdateScheduler] Target list changed: <CADisplay:LCD PurpleMain>
+2026-10-31 17:15:15.707 E  ZiOS[58004:24be4] [com.apple.app_launch_measurement:General] Failed to send CA Event for app launch measurements for ca_event_type: 0 event_name: com.apple.app_launch_measurement.FirstFramePresentationMetric
+2026-10-31 17:15:15.707 A  ZiOS[58004:24c37] (RunningBoardServices) didChangeInheritances
+2026-10-31 17:15:15.707 Df SpringBoard[14721:24afc] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:15.708 Df ZiOS[58004:24af8] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A  persistentID: E946A395-7D92-449C-BC7D-309CDECB648A
+2026-10-31 17:15:15.708 Df ZiOS[58004:24af8] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A)
+2026-10-31 17:15:15.709 Df ZiOS[58004:24af8] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A)
+2026-10-31 17:15:15.709 Df ZiOS[58004:24af8] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A  persistentID: E946A395-7D92-449C-BC7D-309CDECB648A
+2026-10-31 17:15:15.709 Df ZiOS[58004:24af8] [com.apple.UIKit:Application] Deactivation reason removed: 12; deactivation reasons: 4128 -> 32; animating application lifecycle event: 1
+2026-10-31 17:15:15.710 Df mediaremoted[14728:20c64] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:15.710 Df ZiOS[58004:24af8] [com.apple.KeyboardArbiter:Client] Send setDeactivating: N (-DeactivationReason:SuspendedEventsOnly)
+2026-10-31 17:15:15.710 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:Scene] [(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] propagating 5 settings from (FBSceneManager):com.apple.springboard
+2026-10-31 17:15:15.711 Df ZiOS[58004:24af8] [com.apple.UIKit:Application] Deactivation reason removed: 5; deactivation reasons: 32 -> 0; animating application lifecycle event: 0
+2026-10-31 17:15:15.711 Df ZiOS[58004:24af8] [com.apple.KeyboardArbiter:Client] startConnection
+2026-10-31 17:15:15.713 Df locationd[14745:23730] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:15.714 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:Scene] [(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] Removing parent scene.
+2026-10-31 17:15:15.714 Df runningboardd[14724:24852] [com.apple.runningboard:ttl] Invalidating assertion 14724-14721-2573 (target:[app<dev.zios.app((null))>:58004](UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A)) from originator [osservice<com.apple.SpringBoard>:14721]
+2026-10-31 17:15:15.715 Df ZiOS[58004:24af8] [com.apple.xpc:connection] [0x10b5908c0] activating connection: mach=true listener=false peer=false name=com.apple.UIKit.KeyboardManagement.hosted
+2026-10-31 17:15:15.715 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:Scene] [(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] Setting parent scene: (FBSceneManager):com.apple.springboard
+2026-10-31 17:15:15.715 Df ZiOS[58004:24af8] [com.apple.FrontBoard:SceneExtension] Realizing settings extension SBUISecureRenderingSettingsExtension on FBSSceneSettings
+2026-10-31 17:15:15.715 Df SpringBoard[14721:ba19] [com.apple.FrontBoard:Scene] [(FBSceneManager):sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A] propagating 5 settings from (FBSceneManager):com.apple.springboard
+2026-10-31 17:15:15.716 Df runningboardd[14724:24852] [com.apple.runningboard:ttl] Acquiring assertion targeting [app<dev.zios.app((null))>:58004](UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A) from originator [osservice<com.apple.SpringBoard>:14721] with description <RBSAssertionDescriptor| "injecting  inherited from 'UIScene:com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard'" ID:14724-14721-2574 target:58004<UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A> attributes:[
+	<RBSHereditaryGrant| endowmentNamespace:com.apple.boardservices.endpoint-injection UIScene:com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard>,
+	<RBSHereditaryGrant| endowmentNamespace:com.apple.frontboard.visibility UIScene:com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard>
+	]>
+2026-10-31 17:15:15.716 Df runningboardd[14724:24852] [com.apple.runningboard:ttl] Assertion 14724-14721-2574 (target:[app<dev.zios.app((null))>:58004](UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A)) will be created as active
+2026-10-31 17:15:15.717 Df SpringBoard[14721:24afc] [com.apple.KeyboardArbiter:Handle] RX dev.zios.app(58004) startArbitration
+    expectedState:(null)
+    focusContext:<contextID:1012862699 sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A>
+    hostingPIDs:() usingFence:Y withSuppression:0
+2026-10-31 17:15:15.717 Df runningboardd[14724:24851] [com.apple.runningboard:connection] Inheritance changeset: <RBSInheritanceChangeSet| gained:{(
+    <RBSInheritance| environment:UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A name:com.apple.frontboard.visibility origID:14724-14721-2574 payload 5755073674419036818>
+)} lost:{(
+)}>
+2026-10-31 17:15:15.717 Df ZiOS[58004:24af8] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x10801cbb0> (E946A395-7D92-449C-BC7D-309CDECB648A)
+2026-10-31 17:15:15.717 A  ZiOS[58004:24c37] (RunningBoardServices) didChangeInheritances
+2026-10-31 17:15:15.718 Df SpringBoard[14721:24afc] [com.apple.KeyboardArbiter:Events] set focusRequestedHandle:<dev.zios.app focus:<contextID:1012862699 sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A> run:Y hosting:() level:0 active:N wantedState:Disabled #suppr:0 iavHeight:0 onScreen:N>
+2026-10-31 17:15:15.718 Df ZiOS[58004:24af8] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A  persistentID: E946A395-7D92-449C-BC7D-309CDECB648A
+2026-10-31 17:15:15.718 Df SpringBoard[14721:20c61] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:15.719 Df ZiOS[58004:24af8] [com.apple.KeyboardArbiter:Client] handleKeyboardChange: set currentKeyboard:N (wasKeyboard:N)
+2026-10-31 17:15:15.719 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] forceReloadInputViews
+2026-10-31 17:15:15.719 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] Reloading input views for key-window scene responder: <GPUIMetalView: 0x108658380; frame = (0 0; 393 852); > force:Y
+2026-10-31 17:15:15.720 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _reloadInputViewsForKeyWindowSceneResponder: 1 force: 1, fromBecomeFirstResponder: 0 (automaticKeyboard: 1, reloadIdentifier: 18BD5FAF-72C5-46BE-A9FC-2EE9464E5D46)
+2026-10-31 17:15:15.720 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder: <GPUIMetalView: 0x108658380; frame = (0 0; 393 852); >, automaticKeyboard: 1, force: 1
+2026-10-31 17:15:15.720 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, found custom inputView: <(null): 0x0>, customInputViewController: <(null): 0x0>
+2026-10-31 17:15:15.720 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, found inputAccessoryView: <(null): 0x0>
+2026-10-31 17:15:15.720 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, responderRequiresKeyboard 0 (automaticKeyboardEnabled: 1, activeInstance: <(null): 0x0>, self.isOnScreen: 0, requiresKBWhenFirstResponder: 0)
+2026-10-31 17:15:15.720 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, useKeyboard 0 (allowsSystemInputView: 1, !inputView <(null): 0x0>, responderRequiresKeyboard 0)
+2026-10-31 17:15:15.720 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, configuring _responderWithoutAutomaticAppearanceEnabled: <(null): 0x0> (_automaticAppearEnabled: 1)
+2026-10-31 17:15:15.720 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder, needsIVPlaceholder: 0, needsIAVPlaceholder: 0, needsInputSetWithPlaceholder: 0
+2026-10-31 17:15:15.720 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] _inputViewsForResponder returning: <<UIInputViewSet: 0x10875c180>; (empty)>
+2026-10-31 17:15:15.720 Df ZiOS[58004:24af8] [com.apple.UIKit:UIPeripheralHost] endPlacementForInputViewSet: <<UIInputViewSet: 0x10875c180>; (empty)> windowScene: <UIWindowScene: 0x10801cbb0; role: UIWindowSceneSessionRoleApplication; persistentIdentifier: E946A395-7D92-449C-BC7D-309CDECB648A; activationState: UISceneActivationStateForegroundActive>
+2026-10-31 17:15:15.721 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardSceneDelegate] [Interface Orientation] was:Interface Unknown now:UIInterfaceOrientationPortrait reason:Using key window scene
+2026-10-31 17:15:15.722 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:AppSwitcher] [Main (EmbeddedDisplay)] dispatch event:
+<SBSceneReadySwitcherModifierEvent: 0x108364840; type: SceneReady; appLayout: <SBAppLayout: 0x11dc07c80; primary: dev.zios.app:309CDECB648A; environment: main> {
+    configuration = full;
+    environment = main;
+    centerConfiguration = undefined;
+    preferredDisplayOrdinal = 0;
+    continuousExposeIdentifier = dev.zios.app;
+    layoutItems = {
+        primary = <SBDisplayItem: 0x11ee3eec0; type: App; bundleIdentifier: dev.zios.app; uniqueIdentifier: sceneID:dev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A>;
+    }
+}>
+2026-10-31 17:15:15.722 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardArbiterClientLog] isWritingToolsHandlingKeyboardTracking:Y (WT ready:Y, Arbiter ready:Y)
+2026-10-31 17:15:15.722 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardArbiterClientLog] -[_UIRemoteKeyboards prepareToMoveKeyboard:withIAV:isIAVRelevant:showing:notifyRemote:forScene:] position: {{0, 0}, {0, 0}} visible: 0; notifyRemote: 0; isMinimized: NO
+2026-10-31 17:15:15.723 Df ZiOS[58004:24af8] [com.apple.UIKit:KeyboardVisualMode] Show keyboard with visual mode windowed (0)
+2026-10-31 17:15:15.726 Df ZiOS[58004:24af8] [com.apple.xpc:connection] [0x10b590dc0] activating connection: mach=true listener=false peer=false name=com.apple.IOSurface.Remote
+2026-10-31 17:15:15.733 Df SpringBoard[14721:ba19] [com.apple.SpringBoard:Common] Front display did change: <SBApplication: 0x1083b1f00; dev.zios.app>
+2026-10-31 17:15:15.752 Df ZiOS[58004:24bde] [com.apple.UIKit:BackgroundTask] Ending background task with UIBackgroundTaskIdentifier: 2
+2026-10-31 17:15:15.785 Df ZiOS[58004:24af8] [com.apple.network:activity] <nw_activity 50:1 [2FAB26FF-280A-4A06-8EBC-D66BC7152786] (global parent) (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 2901ms
+2026-10-31 17:15:15.792 Df ZiOS[58004:24af8] [com.apple.network:activity] <nw_activity 50:2 [AED9A5BB-BD50-4B0C-866A-E9F1A7FEA477] (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 2906ms
+2026-10-31 17:15:15.793 Df ZiOS[58004:24af8] [com.apple.network:activity] Unsetting the global parent activity <nw_activity 50:1 [2FAB26FF-280A-4A06-8EBC-D66BC7152786] (global parent) (reporting strategy default) complete (reason success)>
+2026-10-31 17:15:15.793 Df ZiOS[58004:24af8] [com.apple.network:activity] Unset the global parent activity
+2026-10-31 17:15:15.793 Df ZiOS[58004:24af8] [com.apple.app_launch_measurement:ApplicationLaunch] alm_release_pageins_recording_assertion: releasing pageins recording assertion
+2026-10-31 17:15:15.794 E  ZiOS[58004:24c37] [com.apple.app_launch_measurement:General] Failed to send CA Event for app launch measurements for ca_event_type: 1 event_name: com.apple.app_launch_measurement.ExtendedLaunchMetrics
+2026-10-31 17:15:15.794 Df ZiOS[58004:24bde] [com.apple.UIKit:BackgroundTask] Ending task with identifier 2 and description: <_UIBackgroundTaskInfo: 0x1086a9800>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 1640 (elapsed = 1), _expireHandler: <__NSGlobalBlock__: 0x1e78c84e8>
+2026-10-31 17:15:15.807 Df runningboardd[14724:24851] [com.apple.runningboard:ttl] Invalidating assertion 14724-58004-2572 (target:[app<dev.zios.app((null))>:58004]) from originator [app<dev.zios.app((null))>:58004]
+2026-10-31 17:15:15.807 Df ZiOS[58004:24bde] [com.apple.UIKit:BackgroundTask] Decrementing reference count for assertion <BKSProcessAssertion: 0x1085c42d0> (used by background task with identifier 2: <_UIBackgroundTaskInfo: 0x1086a9800>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 1640 (elapsed = 1))
+2026-10-31 17:15:15.807 Df ZiOS[58004:24bde] [com.apple.UIKit:BackgroundTask] Will invalidate assertion: <BKSProcessAssertion: 0x1085c42d0> for task identifier: 2
+2026-10-31 17:15:15.808 Df runningboardd[14724:24851] [com.apple.runningboard:ttl] Invalidating assertion 14724-58004-2571 (target:[app<dev.zios.app((null))>:58004]) from originator [app<dev.zios.app((null))>:58004]
+2026-10-31 17:15:15.816 Df runningboardd[14724:20629] [com.apple.runningboard:monitor] Calculated state for app<dev.zios.app((null))>: running-active (role: UserInteractiveFocal) (endowments: {(
+    <RBSProcessEndowmentInfo| namespace:com.apple.frontboard.visibility env:(null)  0>,
+    <RBSProcessEndowmentInfo| namespace:com.apple.frontboard.visibility env:UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A payload: 5755073674419036818>
+)})
+2026-10-31 17:15:15.816 Df runningboardd[14724:24851] [com.apple.runningboard:connection] Inheritance changeset: <RBSInheritanceChangeSet| gained:{(
+)} lost:{(
+    <RBSInheritance| environment:UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A name:com.apple.frontboard.visibility origID:14724-14721-2573 payload 5755073674419036818>
+)}>
+2026-10-31 17:15:15.816 A  ZiOS[58004:24bde] (RunningBoardServices) didChangeInheritances
+2026-10-31 17:15:15.816 Df SpringBoard[14721:1f1d8] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:15.817 Df locationd[14745:1fe3e] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:15.818 Df mediaremoted[14728:20c64] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:16.062 Df SpringBoard[14721:1f1d8] [com.apple.FrontBoard:ProcessWorkspace] [app<dev.zios.app>:58004] Dropping launch assertion.
+2026-10-31 17:15:16.063 Df runningboardd[14724:24851] [com.apple.runningboard:ttl] Invalidating assertion 14724-14721-2567 (target:app<dev.zios.app((null))>) from originator [osservice<com.apple.SpringBoard>:14721]
+2026-10-31 17:15:16.164 Df runningboardd[14724:24852] [com.apple.runningboard:monitor] Calculated state for app<dev.zios.app((null))>: running-active (role: UserInteractiveFocal) (endowments: {(
+    <RBSProcessEndowmentInfo| namespace:com.apple.frontboard.visibility env:(null)  0>,
+    <RBSProcessEndowmentInfo| namespace:com.apple.frontboard.visibility env:UIScene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Adev.zios.app-E946A395-7D92-449C-BC7D-309CDECB648A payload: 5755073674419036818>
+)})
+2026-10-31 17:15:16.164 Df runningboardd[14724:24852] [com.apple.DynamicPrefetching:default] end_scenario: Called with bundleid "dev.zios.app" scenario "Launch"
+2026-10-31 17:15:16.164 A  ZiOS[58004:24be4] (RunningBoardServices) didChangeInheritances
+2026-10-31 17:15:16.165 Df SpringBoard[14721:24857] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:16.169 Df mediaremoted[14728:2485c] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:15:16.169 Df locationd[14745:20636] [com.apple.runningboard:monitor] Received state update for 58004 (app<dev.zios.app((null))>, running-active-Visible
+2026-10-31 17:20:46.742 Df log[76414:0] [com.apple.log:] log run noninteractively, parent: 14716 (launchd_sim), args: 'log' 'show' '--last' '10m' '--style' 'compact' '--predicate' 'process == "ZiOS" OR eventMessage CONTAINS "dev.zios.app"'
