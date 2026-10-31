@@ -93,37 +93,3 @@ jobs:
             build/sim-results/logs/**
             build/sim-results/crash-reports/**
           if-no-files-found: warn
-
-  device:
-    name: Device build (unsigned .ipa)
-    runs-on: macos-26
-    timeout-minutes: 340
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/setup
-        with:
-          cache-key: device
-          targets: aarch64-apple-ios
-      - name: Cache ios_system frameworks
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ios/Frameworks
-          key: ios-frameworks-${{ hashFiles('scripts/fetch_ios_system.sh') }}
-      - name: Fetch ios_system frameworks
-        run: scripts/fetch_ios_system.sh
-      - name: Build Zed ZiOS.ipa (ios-release profile)
-        run: scripts/build_app.sh device --package zed --bin zed
-      - name: Upload unsigned .ipa
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: ZiOS-ipa
-          path: build/device/ZiOS.ipa
-          if-no-files-found: error
-      - name: Upload dSYM
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: ZiOS-dSYM
-          path: build/device/ZiOS.app.dSYM.zip
-          if-no-files-found: error
