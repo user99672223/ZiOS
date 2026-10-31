@@ -517,3 +517,82 @@ pub fn inject_input(input: gpui::PlatformInput) {
         }
     });
 }
+
+pub use super::application::{ExternalDisplayEvent, ExternalDisplayInfo, ExternalDisplayMode};
+
+/// Chooses where the editor goes when a monitor is connected and applies it now.
+pub fn set_external_display_mode(mode: ExternalDisplayMode) {
+    if let Some(platform) = super::application::current_platform() {
+        platform.application.external_display_mode.set(mode);
+        platform.application.place_editor();
+    }
+}
+
+pub fn external_display_mode() -> ExternalDisplayMode {
+    super::application::current_platform()
+        .map(|platform| platform.application.external_display_mode.get())
+        .unwrap_or_default()
+}
+
+/// Sets the monitor's UI scale (`None` picks one from its resolution).
+pub fn set_external_ui_scale(scale: Option<f32>) {
+    if let Some(platform) = super::application::current_platform() {
+        platform.application.external_ui_scale.set(scale.map(|scale| scale.clamp(1.0, 2.0)));
+        platform
+            .application
+            .with_windows(|window| window.handle_layout_change());
+    }
+}
+
+/// Whether the editor window currently shows on the monitor.
+pub fn editor_on_external_display() -> bool {
+    super::application::current_platform()
+        .is_some_and(|platform| platform.application.editor_on_external())
+}
+
+/// The connected monitor, if any.
+pub fn external_display() -> Option<ExternalDisplayInfo> {
+    let platform = super::application::current_platform()?;
+    let screen = platform.application.external_screen()?;
+    Some(super::application::external_display_info(&screen))
+}
+
+/// Observes monitor connection and editor moves.
+pub fn on_external_display_event(callback: impl FnMut(ExternalDisplayEvent) + 'static) {
+    if let Some(platform) = super::application::current_platform() {
+        platform
+            .application
+            .external_display_events
+            .set(Box::new(callback));
+    }
+}
+
+thread_local! {
+    static BRIGHTNESS_BEFORE_DIMMING: std::cell::Cell<Option<f64>> = const { std::cell::Cell::new(None) };
+}
+
+/// Dims the phone's screen while the editor is on a monitor, restoring the
+/// previous brightness when turned off.
+pub fn set_phone_dimmed(dimmed: bool) {
+    let Some(platform) = super::application::current_platform() else {
+        return;
+    };
+    let Some(scene) = platform.application.window_scene() else {
+        return;
+    };
+    let screen = scene.screen();
+    BRIGHTNESS_BEFORE_DIMMING.with(|before| {
+        if dimmed {
+            if before.get().is_none() {
+                before.set(Some(screen.brightness()));
+            }
+            screen.setBrightness(0.0);
+        } else if let Some(previous) = before.take() {
+            screen.setBrightness(previous);
+        }
+    });
+}
+
+pub fn phone_dimmed() -> bool {
+    BRIGHTNESS_BEFORE_DIMMING.with(|before| before.get().is_some())
+}

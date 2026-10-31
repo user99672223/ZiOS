@@ -3,6 +3,8 @@
 //! display companion here.
 
 pub mod ci;
+#[cfg(target_os = "ios")]
+pub mod display;
 pub mod lan_mouse;
 pub mod status;
 
@@ -16,6 +18,8 @@ use workspace::AppState;
 pub fn init(app_state: Arc<AppState>, cx: &mut App) {
     cx.on_memory_warning(|_cx| memory::raise_warning(WarningSource::System))
         .detach();
+    #[cfg(target_os = "ios")]
+    display::init(cx);
     lan_mouse::init(cx);
     status::init(cx);
     ci::start(app_state, cx);

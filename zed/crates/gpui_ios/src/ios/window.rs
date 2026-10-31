@@ -344,6 +344,8 @@ pub(crate) struct IosWindowState {
     forwarded_presses: RefCell<Vec<isize>>,
     /// Pointer drawn over the editor while a remote mouse (lan-mouse) drives it.
     pointer: RefCell<Option<PointerOverlay>>,
+    /// Points per GPUI logical pixel (1 on the phone).
+    ui_scale_cell: Cell<f32>,
     renderer: Mutex<MetalRenderer>,
 }
 
@@ -513,6 +515,7 @@ impl IosWindow {
             key_repeat: RefCell::new(None),
             forwarded_presses: RefCell::new(Vec::new()),
             pointer: RefCell::new(None),
+            ui_scale_cell: Cell::new(1.0),
             renderer: Mutex::new(renderer),
         };
 
@@ -539,8 +542,37 @@ impl IosWindow {
 impl IosWindowState {
     pub(super) fn attach_to_scene(&self, scene: &UIWindowScene) {
         self.window.setWindowScene(Some(scene));
+        // A window keeps its frame when it changes scenes; fill the new screen.
+        self.window.setFrame(scene.screen().bounds());
         self.window.makeKeyAndVisible();
         self.handle_layout_change();
+    }
+
+    pub(super) fn is_on_scene(&self, scene: &UIWindowScene) -> bool {
+        self.window
+            .windowScene()
+            .is_some_and(|current| std::ptr::eq::<UIWindowScene>(&*current, scene))
+    }
+
+    /// The UI scale for the screen this window is on. The phone always uses 1;
+    /// on a monitor it is the user's choice, or chosen from the resolution.
+    fn ui_scale(&self) -> f32 {
+        let screen = self.window.screen();
+        let platform = self.platform.upgrade();
+        let phone_screen = platform
+            .as_ref()
+            .and_then(|platform| platform.application.window_scene())
+            .map(|scene| scene.screen());
+        if phone_screen.is_none_or(|phone| std::ptr::eq::<UIScreen>(&*screen, &*phone)) {
+            return 1.0;
+        }
+        let configured = platform.and_then(|platform| platform.application.external_ui_scale.get());
+        configured.unwrap_or_else(|| {
+            // A 4K monitor reported at 1x would make everything tiny.
+            let native_height = screen.nativeBounds().size.height;
+            let scale = screen.scale();
+            if native_height / scale >= 2000.0 { 2.0 } else { 1.0 }
+        })
     }
 
     fn register_keyboard_observers(self: &Rc<Self>) {
@@ -600,7 +632,7 @@ impl IosWindowState {
     }
 
     fn handle_touch_sample(&self, touch: &UITouch, id: TouchId) {
-        let position = touch_location_in_view(touch, &self.view);
+        let position = touch_location_in_view(touch, &self.view) / self.ui_scale_cell.get();
         self.mouse_position.set(position);
 
         let event = TouchEvent {
@@ -617,9 +649,10 @@ impl IosWindowState {
 
     /// Delivers one step of a trackpad or mouse-wheel scroll gesture.
     fn handle_scroll(&self, recognizer: &UIPanGestureRecognizer) {
-        let Some(event) = scroll_event(recognizer, &self.view) else {
+        let Some(mut event) = scroll_event(recognizer, &self.view) else {
             return;
         };
+        event.position = event.position / self.ui_scale_cell.get();
         self.mouse_position.set(event.position);
         self.modifiers.set(event.modifiers);
         self.input_callback
@@ -930,7 +963,7 @@ impl IosWindowState {
     fn show_pointer(&self, position: Point<Pixels>) {
         let mut pointer = self.pointer.borrow_mut();
         let pointer = pointer.get_or_insert_with(|| PointerOverlay::new(&self.view));
-        pointer.move_to(position);
+        pointer.move_to(position * self.ui_scale_cell.get());
     }
 
     fn hide_idle_pointer(&self) {
@@ -1048,9 +1081,12 @@ impl IosWindowState {
         }
         let scale = display.scale() as f64;
 
-        let width = view_bounds.size.width as f32;
-        let height = view_bounds.size.height as f32;
-        let new_scale = scale as f32;
+        // UI scale enlarges GPUI's logical pixels; the drawable stays native.
+        let ui_scale = self.ui_scale();
+        self.ui_scale_cell.set(ui_scale);
+        let width = view_bounds.size.width as f32 / ui_scale;
+        let height = view_bounds.size.height as f32 / ui_scale;
+        let new_scale = scale as f32 * ui_scale;
 
         let old_bounds = self.bounds.get();
         let old_scale = self.scale_factor.get();

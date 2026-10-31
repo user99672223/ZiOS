@@ -14,13 +14,42 @@ use objc2_foundation::{
 use objc2_quartz_core::CADisplayLink;
 use objc2_ui_kit::{
     UIApplication, UIApplicationDelegate, UIApplicationLaunchOptionsKey, UIOpenURLContext, UIScene,
-    UISceneConfiguration, UISceneConnectionOptions, UISceneDelegate, UISceneSession, UIWindowScene,
-    UIWindowSceneDelegate,
+    UISceneConfiguration, UISceneConnectionOptions, UISceneDelegate, UISceneSession, UIScreen,
+    UIScreenOverscanCompensation, UIWindowScene, UIWindowSceneDelegate,
+    UIWindowSceneSessionRoleExternalDisplayNonInteractive,
 };
 use std::{
     cell::{Cell, RefCell},
     rc::{Rc, Weak},
 };
+
+/// Where the editor goes when a monitor is connected (CLAUDE.md section 10).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum ExternalDisplayMode {
+    /// Move the editor to the monitor; the phone shows a companion view.
+    #[default]
+    Auto,
+    /// Keep the editor on the phone and leave the monitor to iOS (black or
+    /// mirrored, as iOS chooses).
+    Off,
+}
+
+/// A change in where the editor is shown.
+#[derive(Debug, Clone, PartialEq)]
+pub enum ExternalDisplayEvent {
+    Connected(ExternalDisplayInfo),
+    Disconnected,
+    /// The editor window moved; `on_external` tells where it is now.
+    EditorMoved { on_external: bool },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ExternalDisplayInfo {
+    pub width_pixels: u32,
+    pub height_pixels: u32,
+    pub scale: f32,
+    pub maximum_frames_per_second: i64,
+}
 
 #[derive(Default)]
 pub(super) struct IosApplicationState {
@@ -31,6 +60,15 @@ pub(super) struct IosApplicationState {
     pub(super) app_lifecycle: CallbackSlot<Box<dyn FnMut(AppLifecyclePhase)>>,
     pub(super) memory_warning: CallbackSlot<Box<dyn FnMut()>>,
     scene: RefCell<Option<Retained<UIWindowScene>>>,
+    external_scene: RefCell<Option<Retained<UIWindowScene>>>,
+    pub(super) external_display_mode: Cell<ExternalDisplayMode>,
+    /// UI scale on the monitor; `None` picks one from the monitor's resolution.
+    pub(super) external_ui_scale: Cell<Option<f32>>,
+    editor_on_external: Cell<bool>,
+    foreground: Cell<bool>,
+    pub(super) external_display_events: CallbackSlot<Box<dyn FnMut(ExternalDisplayEvent)>>,
+    /// The main scene delegate; display links of every screen call it.
+    frame_target: RefCell<Option<Retained<SceneDelegate>>>,
     // The link retains its delegate target, which only weakly references this state.
     display_link: RefCell<Option<Retained<CADisplayLink>>>,
     windows: RefCell<Vec<Weak<IosWindowState>>>,
@@ -70,6 +108,66 @@ pub(super) fn run(platform: &Rc<IosPlatformState>, on_finish_launching: Box<dyn 
 }
 
 impl IosApplicationState {
+    /// Drives frames from `screen`'s own display link so rendering follows the
+    /// refresh rate of whichever screen shows the editor.
+    fn install_display_link(&self, screen: &UIScreen) {
+        let Some(target) = self.frame_target.borrow().clone() else {
+            return;
+        };
+        self.stop_display_link();
+        let display_link = unsafe {
+            let display_link = screen.displayLinkWithTarget_selector(&target, sel!(renderFrame:));
+            let Some(display_link) = display_link else {
+                log::error!("GPUI iOS: the screen did not provide a display link");
+                return;
+            };
+            display_link.setPaused(!self.foreground.get());
+            display_link.addToRunLoop_forMode(&NSRunLoop::mainRunLoop(), NSRunLoopCommonModes);
+            display_link
+        };
+        *self.display_link.borrow_mut() = Some(display_link);
+    }
+
+    pub(super) fn editor_on_external(&self) -> bool {
+        self.editor_on_external.get()
+    }
+
+    pub(super) fn external_screen(&self) -> Option<Retained<UIScreen>> {
+        self.external_scene.borrow().as_ref().map(|scene| scene.screen())
+    }
+
+    /// Puts the editor (the first window) on the monitor or the phone according
+    /// to the mode, keeping the same UIWindow so no editor state is touched.
+    pub(super) fn place_editor(&self) {
+        let main_scene = self.window_scene();
+        let external_scene = self.external_scene.borrow().clone();
+        let use_external = self.external_display_mode.get() == ExternalDisplayMode::Auto
+            && external_scene.is_some();
+        let Some(target) = (if use_external { external_scene } else { main_scene }) else {
+            return;
+        };
+        let editor = self.windows.borrow().iter().find_map(Weak::upgrade);
+        if let Some(editor) = editor {
+            if !editor.is_on_scene(&target) {
+                log::info!(
+                    "GPUI iOS: moving the editor to the {}",
+                    if use_external { "external display" } else { "phone" }
+                );
+                editor.attach_to_scene(&target);
+            }
+        }
+        self.install_display_link(&target.screen());
+        if self.editor_on_external.replace(use_external) != use_external {
+            self.external_display_events
+                .with(|callback| callback(ExternalDisplayEvent::EditorMoved { on_external: use_external }));
+        }
+        // The phone keeps the monitor alive; locking it stops the output.
+        if let Some(main_thread) = MainThreadMarker::new() {
+            UIApplication::sharedApplication(main_thread)
+                .setIdleTimerDisabled(self.external_scene.borrow().is_some());
+        }
+    }
+
     fn set_display_link_paused(&self, paused: bool) {
         let display_link = self.display_link.borrow().clone();
         if let Some(display_link) = display_link {
@@ -238,13 +336,23 @@ define_class!(
             session: &UISceneSession,
             _options: &UISceneConnectionOptions,
         ) -> Retained<UISceneConfiguration> {
+            let role = session.role();
+            let external = &*role == unsafe { UIWindowSceneSessionRoleExternalDisplayNonInteractive };
             let configuration = UISceneConfiguration::initWithName_sessionRole(
                 UISceneConfiguration::alloc(self.mtm()),
-                Some(&NSString::from_str("Default Configuration")),
-                &session.role(),
+                Some(&NSString::from_str(if external {
+                    "External Display Configuration"
+                } else {
+                    "Default Configuration"
+                })),
+                &role,
             );
             unsafe {
-                configuration.setDelegateClass(Some(SceneDelegate::class()));
+                if external {
+                    configuration.setDelegateClass(Some(ExternalSceneDelegate::class()));
+                } else {
+                    configuration.setDelegateClass(Some(SceneDelegate::class()));
+                }
             }
             configuration
         }
@@ -327,18 +435,9 @@ define_class!(
                 }
             }
 
-            application.stop_display_link();
-            let display_link = unsafe {
-                let display_link =
-                    CADisplayLink::displayLinkWithTarget_selector(self, sel!(renderFrame:));
-                display_link.setPaused(true);
-                display_link.addToRunLoop_forMode(
-                    &NSRunLoop::mainRunLoop(),
-                    NSRunLoopCommonModes,
-                );
-                display_link
-            };
-            *application.display_link.borrow_mut() = Some(display_link);
+            *application.frame_target.borrow_mut() = Some(self.retain());
+            // A monitor may have connected first; this also installs the link.
+            application.place_editor();
         }
 
         #[unsafe(method(sceneDidDisconnect:))]
@@ -353,6 +452,7 @@ define_class!(
         #[unsafe(method(sceneWillEnterForeground:))]
         fn will_enter_foreground(&self, scene: &UIScene) {
             if let Some(platform) = self.platform_for_scene(scene) {
+                platform.application.foreground.set(true);
                 platform.application.set_display_link_paused(false);
                 platform.application.notify_app_lifecycle(AppLifecyclePhase::Foreground);
             }
@@ -375,6 +475,7 @@ define_class!(
         #[unsafe(method(sceneDidEnterBackground:))]
         fn did_enter_background(&self, scene: &UIScene) {
             if let Some(platform) = self.platform_for_scene(scene) {
+                platform.application.foreground.set(false);
                 platform.application.set_display_link_paused(true);
                 platform.application.notify_app_lifecycle(AppLifecyclePhase::Background);
             }
@@ -395,6 +496,91 @@ define_class!(
         }
     }
 );
+
+define_class!(
+    #[unsafe(super = NSObject)]
+    #[thread_kind = MainThreadOnly]
+    #[name = "GPUIIosExternalSceneDelegate"]
+    #[ivars = Weak<IosPlatformState>]
+    struct ExternalSceneDelegate;
+
+    unsafe impl NSObjectProtocol for ExternalSceneDelegate {}
+    unsafe impl UIWindowSceneDelegate for ExternalSceneDelegate {}
+
+    impl ExternalSceneDelegate {
+        #[unsafe(method_id(init))]
+        fn init(this: Allocated<Self>) -> Retained<Self> {
+            let platform = current_platform()
+                .map(|platform| Rc::downgrade(&platform))
+                .unwrap_or_default();
+            let this = this.set_ivars(platform);
+            unsafe { msg_send![super(this), init] }
+        }
+    }
+
+    unsafe impl UISceneDelegate for ExternalSceneDelegate {
+        #[unsafe(method(scene:willConnectToSession:options:))]
+        fn will_connect(
+            &self,
+            scene: &UIScene,
+            _session: &UISceneSession,
+            _options: &SceneConnectionOptions,
+        ) {
+            let Some(scene) = scene.downcast_ref::<UIWindowScene>() else {
+                return;
+            };
+            let Some(platform) = self.ivars().upgrade() else {
+                return;
+            };
+            let screen = scene.screen();
+            // Native resolution, no overscan shrinking (monitors, not TVs).
+            if let Some(mode) = screen.preferredMode() {
+                screen.setCurrentMode(Some(&mode));
+            }
+            screen.setOverscanCompensation(UIScreenOverscanCompensation::None);
+            let info = external_display_info(&screen);
+            log::info!("GPUI iOS: external display connected: {info:?}");
+            let application = &platform.application;
+            *application.external_scene.borrow_mut() = Some(scene.retain());
+            application
+                .external_display_events
+                .with(|callback| callback(ExternalDisplayEvent::Connected(info.clone())));
+            application.place_editor();
+        }
+
+        #[unsafe(method(sceneDidDisconnect:))]
+        fn did_disconnect(&self, scene: &UIScene) {
+            let Some(platform) = self.ivars().upgrade() else {
+                return;
+            };
+            let application = &platform.application;
+            let owns_scene = application
+                .external_scene
+                .borrow()
+                .as_ref()
+                .is_some_and(|current| std::ptr::eq(Retained::as_ptr(current).cast::<UIScene>(), scene));
+            if !owns_scene {
+                return;
+            }
+            log::info!("GPUI iOS: external display disconnected");
+            application.external_scene.borrow_mut().take();
+            application.place_editor();
+            application
+                .external_display_events
+                .with(|callback| callback(ExternalDisplayEvent::Disconnected));
+        }
+    }
+);
+
+pub(super) fn external_display_info(screen: &UIScreen) -> ExternalDisplayInfo {
+    let bounds = screen.nativeBounds();
+    ExternalDisplayInfo {
+        width_pixels: bounds.size.width.max(0.) as u32,
+        height_pixels: bounds.size.height.max(0.) as u32,
+        scale: screen.scale() as f32,
+        maximum_frames_per_second: screen.maximumFramesPerSecond() as i64,
+    }
+}
 
 impl SceneDelegate {
     fn platform_for_scene(&self, scene: &UIScene) -> Option<Rc<IosPlatformState>> {

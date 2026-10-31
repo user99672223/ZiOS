@@ -141,6 +141,43 @@ gpui_scenario() {
     done
 }
 
+display_test() {
+    local script_path
+    script_path="$(dirname "${BASH_SOURCE[0]}")/sim_external_display.applescript"
+    pid="$(launch display "wait:9000;mark:display_ready;wait:60000")"
+    if ! wait_for_mark display_ready 120; then
+        fail "display: app never became ready"
+        return
+    fi
+    # The Simulator app must show the device for its menus to apply to it.
+    open -a Simulator --args -CurrentDeviceUDID "$device" || true
+    sleep 8
+    local result
+    if ! result="$(with_timeout 60 osascript "$script_path" connect 2>&1)" || [[ "$result" != clicked* ]]; then
+        echo "SKIPPED display hot-plug: cannot drive Simulator.app's External Displays menu: $result"
+        save_logs display
+        return
+    fi
+    echo "$result"
+    sleep 8
+    if grep -q "moving the editor to the external display" "$logs/Zed.log"; then
+        with_timeout 60 xcrun simctl io "$device" screenshot --display=external --type=png \
+            "$output/external-display.png" > /dev/null || true
+        screenshot companion-on-phone
+    else
+        fail "display: editor did not move to the connected monitor"
+    fi
+    result="$(with_timeout 60 osascript "$script_path" disconnect 2>&1)" || true
+    echo "$result"
+    sleep 6
+    if ! grep -q "moving the editor to the phone" "$logs/Zed.log"; then
+        fail "display: editor did not return to the phone after disconnect"
+    fi
+    is_running "$pid" || fail "display: app died during hot-plug"
+    screenshot after-display-disconnect
+    save_logs display
+}
+
 zed_scenario() {
     documents="$container/Documents"
     edited_file="$documents/demo/src/main.rs"
@@ -195,6 +232,9 @@ zed_scenario() {
         fail "thermal: status panel never opened"
     fi
     save_logs thermal
+
+    log "external display hot-plug: the editor moves to the monitor and back"
+    display_test
 
     log "session restore: relaunch reopens the previous workspace"
     pid="$(launch restore "wait:10000;mark:restored")"

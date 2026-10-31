@@ -51,10 +51,20 @@
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
+		<!-- Required for the external display scene; the iPhone still shows one app scene. -->
 		<key>UIApplicationSupportsMultipleScenes</key>
-		<false/>
+		<true/>
 		<key>UISceneConfigurations</key>
 		<dict>
+			<key>UIWindowSceneSessionRoleExternalDisplayNonInteractive</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>External Display Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>GPUIIosExternalSceneDelegate</string>
+				</dict>
+			</array>
 			<key>UIWindowSceneSessionRoleApplication</key>
 			<array>
 				<dict>

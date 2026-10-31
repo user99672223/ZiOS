@@ -726,7 +726,7 @@ fn size_from_vector2f(vec: Vector2F) -> Size<f32> {
 fn font_properties(font: &FontKitFont) -> font_kit::properties::Properties {
     use font_kit::properties::{Properties, Stretch};
     let traits = font.native_font().all_traits();
-    let number = |key| unsafe {
+    let number = |key| {
         traits
             .find(key)
             .and_then(|value| value.downcast::<CFNumber>())
@@ -740,7 +740,7 @@ fn font_properties(font: &FontKitFont) -> font_kit::properties::Properties {
             .and_then(|number| number.to_i64())
     }
     .unwrap_or(0);
-    let slant = number(kCTFontSlantTrait).unwrap_or(0.0);
+    let slant = number(unsafe { kCTFontSlantTrait }).unwrap_or(0.0);
     let style = if symbolic & ITALIC != 0 || slant > 0.0 {
         FontkitStyle::Italic
     } else {
@@ -758,7 +758,7 @@ fn font_properties(font: &FontKitFont) -> font_kit::properties::Properties {
         (0.56, 800.0),
         (0.62, 900.0),
     ];
-    let weight = number(kCTFontWeightTrait).map_or(400.0, |weight| {
+    let weight = number(unsafe { kCTFontWeightTrait }).map_or(400.0, |weight| {
         ANCHORS
             .windows(2)
             .find(|pair| weight <= pair[1].0)
@@ -771,7 +771,7 @@ fn font_properties(font: &FontKitFont) -> font_kit::properties::Properties {
                 low.1 + fraction * (high.1 - low.1)
             })
     });
-    let width = number(kCTFontWidthTrait).unwrap_or(0.0);
+    let width = number(unsafe { kCTFontWidthTrait }).unwrap_or(0.0);
     let stretch = if width < 0.0 {
         Stretch((1.0 + width as f32 * 0.5).max(Stretch::ULTRA_CONDENSED.0))
     } else {

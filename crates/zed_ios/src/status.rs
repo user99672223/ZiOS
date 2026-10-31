@@ -280,11 +280,23 @@ impl Render for DeviceStatusModal {
             ThermalState::Serious => Color::Warning,
             ThermalState::Critical => Color::Error,
         };
-        let displays = cx.displays();
-        let display_value = match displays.len() {
-            0 | 1 => "phone only".to_string(),
-            count => format!("{} connected", count - 1),
+        #[cfg(target_os = "ios")]
+        let display_value = match gpui_ios::ios::external_display() {
+            Some(info) => format!(
+                "{}×{} @ {} Hz · editor on {}",
+                info.width_pixels,
+                info.height_pixels,
+                info.maximum_frames_per_second,
+                if gpui_ios::ios::editor_on_external_display() {
+                    "monitor"
+                } else {
+                    "phone"
+                }
+            ),
+            None => "not connected".to_string(),
         };
+        #[cfg(not(target_os = "ios"))]
+        let display_value = format!("{} display(s)", cx.displays().len());
         let addresses: Vec<AnyElement> = if snapshot.addresses.is_empty() {
             vec![Self::row("Addresses", "no network", Color::Warning).into_any_element()]
         } else {
