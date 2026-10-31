@@ -9,6 +9,8 @@
 //! - `open:<path>`: opens a folder or file, relative to `Documents`.
 //! - `type:<text>`: dispatches each character as a keystroke.
 //! - `key:<keystroke>`: dispatches one keystroke, such as `cmd-s`.
+//! - `action:<name>`: dispatches an action by name, such as
+//!   `zed_ios::OpenDeviceStatus`.
 //! - `memory_warning`: asks UIKit for a real memory warning.
 //! - `spawn_test`: tries to spawn a process; strict mode must abort the app.
 
@@ -26,6 +28,7 @@ pub enum Step {
     Open(String),
     Type(String),
     Key(String),
+    Action(String),
     MemoryWarning,
     SpawnTest,
 }
@@ -49,6 +52,7 @@ pub fn parse(script: &str) -> Result<Vec<Step>, String> {
                 "key" => Keystroke::parse(argument)
                     .map(|_| Step::Key(argument.to_string()))
                     .map_err(|error| format!("bad keystroke {argument:?}: {error}")),
+                "action" if !argument.is_empty() => Ok(Step::Action(argument.to_string())),
                 "memory_warning" => Ok(Step::MemoryWarning),
                 "spawn_test" => Ok(Step::SpawnTest),
                 _ => Err(format!("unknown CI step {step:?}")),
@@ -118,6 +122,13 @@ async fn run_step(step: &Step, app_state: &Arc<AppState>, cx: &mut AsyncApp) -> 
             }
         }
         Step::Key(keystroke) => dispatch_keystroke(keystroke, cx)?,
+        Step::Action(name) => {
+            let action = cx.update(|cx| cx.build_action(name, None))?;
+            let window = cx
+                .update(|cx| cx.windows().into_iter().next())
+                .context("no window for the action")?;
+            window.update(cx, |_, window, cx| window.dispatch_action(action, cx))?;
+        }
         Step::MemoryWarning => perform_system_memory_warning(),
         Step::SpawnTest => spawn_test(),
     }
@@ -220,7 +231,7 @@ mod tests {
     #[test]
     fn parses_steps() {
         assert_eq!(
-            parse("wait:250; mark:main ;seed_project;open:demo;type:hi;key:cmd-s;memory_warning;spawn_test;")
+            parse("wait:250; mark:main ;seed_project;open:demo;type:hi;key:cmd-s;action:a::B;memory_warning;spawn_test;")
                 .unwrap(),
             vec![
                 Step::Wait(Duration::from_millis(250)),
@@ -229,6 +240,7 @@ mod tests {
                 Step::Open("demo".into()),
                 Step::Type("hi".into()),
                 Step::Key("cmd-s".into()),
+                Step::Action("a::B".into()),
                 Step::MemoryWarning,
                 Step::SpawnTest,
             ]

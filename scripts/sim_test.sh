@@ -19,6 +19,22 @@ bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Info.p
 failures=()
 
 log() { printf '\n==> %s\n' "$*"; }
+
+# with_timeout <seconds> <command...>: macOS has no `timeout`; a hung simctl
+# call (for example, an app that never finishes launching) must not stall CI.
+with_timeout() {
+    local seconds="$1"
+    shift
+    "$@" &
+    local pid=$!
+    ( sleep "$seconds" && kill -TERM "$pid" 2>/dev/null && echo "timed out after ${seconds}s: $*" >&2 ) &
+    local watchdog=$!
+    local status=0
+    wait "$pid" || status=$?
+    kill "$watchdog" 2>/dev/null || true
+    wait "$watchdog" 2>/dev/null || true
+    return "$status"
+}
 fail() { echo "FAIL: $*" >&2; failures+=("$*"); }
 
 # iPhone 15 when the runtime still offers it; otherwise the closest current iPhone.
@@ -78,9 +94,12 @@ launch() {
     rm -rf "$logs/ci-marks.txt" "$logs/strict-violation.txt"
     local environment=(SIMCTL_CHILD_ZIOS_CI_SCRIPT="$script" SIMCTL_CHILD_ZED_LOG=info)
     for assignment in "$@"; do environment+=("SIMCTL_CHILD_$assignment"); done
-    env "${environment[@]}" xcrun simctl launch --terminate-running-process \
-        --stdout="$output/$name.stdout.txt" --stderr="$output/$name.stderr.txt" \
-        "$device" "$bundle_id" | awk '{print $NF}'
+    (
+        export "${environment[@]}"
+        with_timeout 120 xcrun simctl launch --terminate-running-process \
+            --stdout="$output/$name.stdout.txt" --stderr="$output/$name.stderr.txt" \
+            "$device" "$bundle_id"
+    ) | awk '{print $NF}'
 }
 
 save_logs() {
@@ -90,7 +109,7 @@ save_logs() {
 }
 
 screenshot() {
-    xcrun simctl io "$device" screenshot --type=png "$output/$1.png" > /dev/null
+    with_timeout 60 xcrun simctl io "$device" screenshot --type=png "$output/$1.png" > /dev/null
     echo "screenshot $1.png"
 }
 
@@ -135,9 +154,10 @@ zed_scenario() {
         # real UIKit memory warning.
         script="wait:8000;mark:launched;seed_project;open:demo;wait:6000;mark:workspace"
         script+=";open:demo/src/main.rs;wait:4000;type:$edit_marker;key:enter;key:cmd-s;wait:3000;mark:edited"
+        script+=";action:zed_ios::OpenDeviceStatus;wait:2500;mark:status;action:menu::Cancel"
         script+=";memory_warning;wait:3000;mark:after_memory_warning"
         pid="$(launch "main-jit-$jit" "$script" ZED_IOS_FORCE_JIT="$jit" ZED_IOS_MEMORY_CAP_MB="$cap")"
-        for mark in launched workspace edited; do
+        for mark in launched workspace edited status; do
             if wait_for_mark "$mark" 120; then
                 screenshot "$mark-jit-$jit"
             else
@@ -165,6 +185,16 @@ zed_scenario() {
             fail "jit=$jit: ZED_IOS_FORCE_JIT was not applied"
         save_logs "main-jit-$jit"
     done
+
+    log "thermal and Low Power Mode overrides reach the status panel"
+    pid="$(launch thermal "wait:9000;action:zed_ios::OpenDeviceStatus;wait:2500;mark:status_thermal" \
+        ZED_IOS_THERMAL_STATE=serious ZED_IOS_LOW_POWER_MODE=1)"
+    if wait_for_mark status_thermal 120; then
+        screenshot status-thermal-serious
+    else
+        fail "thermal: status panel never opened"
+    fi
+    save_logs thermal
 
     log "session restore: relaunch reopens the previous workspace"
     pid="$(launch restore "wait:10000;mark:restored")"
@@ -214,7 +244,7 @@ save_logs jetsam-test
 
 if ((${#failures[@]})); then
     log "collecting system logs and crash reports"
-    xcrun simctl spawn "$device" log show --last 10m --style compact \
+    with_timeout 120 xcrun simctl spawn "$device" log show --last 10m --style compact \
         --predicate 'process == "ZiOS" OR eventMessage CONTAINS "dev.zios.app"' \
         > "$output/system-log.txt" 2>&1 || true
     tail -n 60 "$output/system-log.txt" || true

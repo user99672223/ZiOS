@@ -216,10 +216,18 @@ static int zios_path_is_forbidden(const char *path) {
     return !allowed;
 }
 
+// Set while a check runs on this thread. Initialization allocates, and the
+// allocator or libc may touch files on first use; re-entering pthread_once from
+// the same thread would deadlock, so nested calls are not checked.
+static __thread int zios_checking;
+
 static void zios_check_path(const char *operation, const char *path, void *caller) {
-    if (zios_reporting) return;
+    if (zios_reporting || zios_checking) return;
+    zios_checking = 1;
     pthread_once(&zios_sandbox_once, zios_sandbox_init);
-    if (zios_mode == ZIOS_SANDBOX_OFF || !zios_path_is_forbidden(path)) return;
+    int forbidden = zios_mode != ZIOS_SANDBOX_OFF && zios_path_is_forbidden(path);
+    zios_checking = 0;
+    if (!forbidden) return;
     char detail[1200];
     snprintf(detail, sizeof detail, "%s outside the app sandbox: %s", operation, path);
     if (zios_mode == ZIOS_SANDBOX_WARN) {

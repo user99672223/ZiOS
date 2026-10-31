@@ -10,3 +10,25 @@ path = "src/lanmouse_rx.rs"
 doctest = false
 
 [dependencies]
+anyhow.workspace = true
+futures.workspace = true
+gpui.workspace = true
+log.workspace = true
+parking_lot.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["rt", "net", "time", "sync", "macros"] }
+
+# lan-mouse's own protocol, event types, and DTLS transport (v0.11.0).
+input-event = { git = "https://github.com/feschber/lan-mouse", rev = "0d2190e787db9e482e17d4c16fb7c00ef4841bcb", default-features = false }
+local-channel = "=0.1.5"
+num_enum = "0.7.2"
+paste = "1.0"
+rustls = { version = "0.23.26", default-features = false, features = ["std", "ring"] }
+webrtc-dtls = { version = "=0.12.0", features = ["pem"] }
+webrtc-util = "=0.11.0"
+
+[dev-dependencies]
+tempfile.workspace = true

@@ -60,6 +60,7 @@ jobs:
       - name: Build for the Simulator (strict mode)
         run: scripts/build_app.sh sim --package ${{ matrix.package }} --bin ${{ matrix.bin }}
       - name: Strict Simulator test pass (JIT forced off, then on)
+        timeout-minutes: 45
         run: scripts/sim_test.sh build/sim/ZiOS.app build/sim-results ${{ matrix.app }}
       - name: Publish screenshots and logs to the ci-results branch
         if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'

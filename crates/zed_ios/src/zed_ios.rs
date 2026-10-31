@@ -3,6 +3,7 @@
 //! display companion here.
 
 pub mod ci;
+pub mod status;
 
 use std::sync::Arc;
 
@@ -14,5 +15,6 @@ use workspace::AppState;
 pub fn init(app_state: Arc<AppState>, cx: &mut App) {
     cx.on_memory_warning(|_cx| memory::raise_warning(WarningSource::System))
         .detach();
+    status::init(cx);
     ci::start(app_state, cx);
 }

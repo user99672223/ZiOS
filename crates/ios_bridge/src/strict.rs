@@ -121,6 +121,12 @@ pub struct StrictConfig {
     pub low_power_override: Option<bool>,
 }
 
+/// The process-wide configuration, read from the environment once.
+pub fn config() -> &'static StrictConfig {
+    static CONFIG: std::sync::OnceLock<StrictConfig> = std::sync::OnceLock::new();
+    CONFIG.get_or_init(StrictConfig::from_env)
+}
+
 impl StrictConfig {
     /// Reads the configuration from the environment.
     pub fn from_env() -> Self {
