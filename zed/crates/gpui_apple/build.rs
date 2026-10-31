@@ -3,6 +3,21 @@
 fn main() {
     #[cfg(any(target_os = "macos", target_os = "ios"))]
     apple_build::run();
+
+    // ZiOS: a non-Apple host cannot run `xcrun metal`. It also cannot link an Apple
+    // binary, so a placeholder library is enough for `cargo check` on Linux.
+    #[cfg(not(any(target_os = "macos", target_os = "ios")))]
+    {
+        let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
+        if target_os == "macos" || target_os == "ios" {
+            let out_dir = std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap());
+            std::fs::write(out_dir.join("shaders.metallib"), []).unwrap();
+            std::fs::write(out_dir.join("stitched_shaders.metal"), "").unwrap();
+            println!(
+                "cargo::warning=placeholder Metal shaders: this host cannot compile Metal; the result only type-checks"
+            );
+        }
+    }
 }
 
 #[cfg(any(target_os = "macos", target_os = "ios"))]

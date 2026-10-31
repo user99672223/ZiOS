@@ -1,0 +1,91 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+  IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+  RUSTC_WRAPPER: sccache
+  SCCACHE_GHA_ENABLED: "true"
+
+jobs:
+  rust-tests:
+    name: Rust tests (macOS)
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+        with:
+          cache-key: tests
+      - name: cargo test (inproc, lanmouse_rx, ios_bridge)
+        working-directory: zed
+        run: cargo test -p inproc -p lanmouse_rx -p ios_bridge
+
+  simulator:
+    name: Simulator build and strict test pass
+    runs-on: macos-26
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+        with:
+          cache-key: simulator
+          targets: aarch64-apple-ios-sim
+      - name: Build ZiOS.app for the Simulator (strict mode)
+        run: scripts/build_app.sh sim
+      - name: Strict Simulator test pass (JIT forced off, then on)
+        run: scripts/sim_test.sh build/sim/ZiOS.app build/sim-results
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: simulator-screenshots
+          path: build/sim-results/*.png
+          if-no-files-found: warn
+      - name: Upload Simulator logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: simulator-logs
+          path: |
+            build/sim-results/**/*.txt
+            build/sim-results/logs/**
+          if-no-files-found: warn
+
+  device:
+    name: Device build (unsigned .ipa)
+    runs-on: macos-26
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+        with:
+          cache-key: device
+          targets: aarch64-apple-ios
+      - name: Build ZiOS.ipa (ios-release profile)
+        run: scripts/build_app.sh device
+      - name: Upload unsigned .ipa
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ZiOS-ipa
+          path: build/device/ZiOS.ipa
+          if-no-files-found: error
+      - name: Upload dSYM
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ZiOS-dSYM
+          path: build/device/ZiOS.app.dSYM.zip
+          if-no-files-found: error

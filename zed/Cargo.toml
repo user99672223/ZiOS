@@ -1,6 +1,11 @@
 [workspace]
 resolver = "2"
 members = [
+    # ZiOS crates live outside the Zed tree; see docs/DECISIONS.md.
+    "../crates/inproc",
+    "../crates/ios_bridge",
+    "../crates/lanmouse_rx",
+    "../crates/zios_app",
     "crates/acp_thread",
     "crates/acp_tools",
     "crates/action_log",
@@ -518,6 +523,10 @@ zed_credentials_provider = { path = "crates/zed_credentials_provider" }
 zed_env_vars = { path = "crates/zed_env_vars" }
 zeta_prompt = { path = "crates/zeta_prompt" }
 zlog = { path = "crates/zlog" }
+# ZiOS
+inproc = { path = "../crates/inproc" }
+ios_bridge = { path = "../crates/ios_bridge" }
+lanmouse_rx = { path = "../crates/lanmouse_rx" }
 zlog_settings = { path = "crates/zlog_settings" }
 ztracing = { path = "crates/ztracing" }
 ztracing_macro = { path = "crates/ztracing_macro" }
@@ -1138,6 +1147,16 @@ codegen-units = 1
 
 [profile.release.package]
 zed = { codegen-units = 16 }
+
+# ZiOS device build (CLAUDE.md section 12). Symbols are split into a dSYM and
+# stripped by scripts/build_app.sh, so `strip` stays off here.
+[profile.ios-release]
+inherits = "release"
+opt-level = 3
+lto = "thin"
+panic = "unwind"
+debug = "line-tables-only"
+strip = false
 
 [profile.release-fast]
 inherits = "release"

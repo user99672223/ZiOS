@@ -1,0 +1,12 @@
+[package]
+name = "lanmouse_rx"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+workspace = "../../zed"
+
+[lib]
+path = "src/lanmouse_rx.rs"
+doctest = false
+
+[dependencies]

@@ -33,6 +33,28 @@ static ENABLED_SINKS_STDERR: AtomicBool = AtomicBool::new(false);
 static SINK_FILE_SIZE_BYTES: AtomicU64 = AtomicU64::new(0);
 /// Maximum size of the log file before it will be rotated, in bytes.
 const SINK_FILE_SIZE_BYTES_MAX: u64 = 1024 * 1024; // 1 MB
+/// Overrides `SINK_FILE_SIZE_BYTES_MAX` when non-zero. iOS keeps far more history on
+/// device because logs are exported for remote debugging.
+static SINK_FILE_SIZE_BYTES_LIMIT: AtomicU64 = AtomicU64::new(0);
+/// An additional platform sink, such as `os_log` on iOS.
+static EXTRA_SINK: OnceLock<fn(log::Level, &str)> = OnceLock::new();
+
+fn file_size_limit() -> u64 {
+    match SINK_FILE_SIZE_BYTES_LIMIT.load(Ordering::Acquire) {
+        0 => SINK_FILE_SIZE_BYTES_MAX,
+        limit => limit,
+    }
+}
+
+/// Sets the size at which the log file is rotated. Call before `init_output_file`.
+pub fn set_file_size_limit(bytes: u64) {
+    SINK_FILE_SIZE_BYTES_LIMIT.store(bytes, Ordering::Release);
+}
+
+/// Registers a sink that receives every record after it has been formatted.
+pub fn init_output_extra(sink: fn(log::Level, &str)) -> Result<(), fn(log::Level, &str)> {
+    EXTRA_SINK.set(sink)
+}
 
 pub struct Record<'a> {
     pub scope: ScopeRef<'a>,
@@ -69,7 +91,7 @@ pub fn init_output_file(
             .expect("Init file output should only be called once");
     }
 
-    let file = open_or_create_log_file(path, path_rotate, SINK_FILE_SIZE_BYTES_MAX)?;
+    let file = open_or_create_log_file(path, path_rotate, file_size_limit())?;
     SINK_FILE_SIZE_BYTES.store(file.metadata().map_or(0, |m| m.len()), Ordering::Release);
     *enabled_sinks_file = Some(file);
 
@@ -151,6 +173,19 @@ pub fn submit(mut record: Record) {
             record.message
         );
     }
+    if let Some(extra_sink) = EXTRA_SINK.get() {
+        let line = format!(
+            "{} {}",
+            SourceFmt {
+                scope: record.scope,
+                module_path: record.module_path,
+                line: record.line,
+                ansi: false,
+            },
+            record.message
+        );
+        extra_sink(record.level, &line);
+    }
     let mut file_guard = ENABLED_SINKS_FILE.lock().unwrap_or_else(|handle| {
         ENABLED_SINKS_FILE.clear_poison();
         handle.into_inner()
@@ -188,7 +223,7 @@ pub fn submit(mut record: Record) {
             );
             SINK_FILE_SIZE_BYTES.fetch_add(writer.written, Ordering::AcqRel) + writer.written
         };
-        if file_size_bytes > SINK_FILE_SIZE_BYTES_MAX {
+        if file_size_bytes > file_size_limit() {
             *file_guard = None;
             let file = rotate_log_file(SINK_FILE_PATH.get(), SINK_FILE_PATH_ROTATE.get());
             match file {

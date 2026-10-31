@@ -1,0 +1,27 @@
+[package]
+name = "ios_bridge"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+workspace = "../../zed"
+
+[lib]
+path = "src/ios_bridge.rs"
+doctest = false
+
+[features]
+# Strict Simulator mode (CLAUDE.md section 12a). Enabled only for Simulator builds.
+strict = []
+
+[dependencies]
+anyhow.workspace = true
+libc.workspace = true
+log.workspace = true
+parking_lot.workspace = true
+zlog.workspace = true
+
+[target.'cfg(any(target_os = "ios", target_os = "macos"))'.dependencies]
+oslog = { version = "=0.2.0", default-features = false }
+
+[dev-dependencies]
+tempfile.workspace = true

@@ -1,0 +1,32 @@
+name: Set up the ZiOS build
+description: Selects the newest stable Xcode and prepares Rust with caching.
+inputs:
+  cache-key:
+    description: Distinguishes caches between jobs that build different targets.
+    required: true
+  targets:
+    description: Space-separated Rust targets to install.
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+      with:
+        xcode-version: latest-stable
+    - name: Rust toolchain (pinned by zed/rust-toolchain.toml)
+      shell: bash
+      working-directory: zed
+      run: |
+        rustup toolchain install
+        if [[ -n "${{ inputs.targets }}" ]]; then rustup target add ${{ inputs.targets }}; fi
+        rustc --version
+        xcodebuild -version
+    - uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+    - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      with:
+        workspaces: zed
+        key: ${{ inputs.cache-key }}
+        # sccache holds compiled crates; rust-cache keeps the registry, git
+        # checkouts, and build-script outputs.
+        cache-targets: "true"

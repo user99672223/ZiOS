@@ -1,0 +1,93 @@
+# Decisions and deviations
+
+Every place where ZiOS departs from `CLAUDE.md`, or where `CLAUDE.md` turned out to
+be wrong about a third-party codebase, with the reason. Newest phase last.
+
+## Pinned versions
+
+| Component | Version / commit | Notes |
+|---|---|---|
+| Zed | `v1.26.2` (`c4273271092b0287f7d181f616bd5171e0a2f70c`) | Latest stable tag on 2026-10-31; `v1.27.0-pre` is preview. Imported with `git subtree --squash` at `/zed`. |
+| Rust | `1.98.1` | Pinned by `zed/rust-toolchain.toml`; CI installs exactly this. |
+| iOS deployment target | 17.0 | Lowest iOS the iPhone 15 shipped with. |
+| oslog crate | `=0.2.0` | `os_log` sink for zlog. |
+| actions/checkout | v7.0.1 `3d3c42e5aac5ba805825da76410c181273ba90b1` | |
+| actions/upload-artifact | v7.0.2 `cf430e030ddbb5b0abf93d22962f4752f3646cd9` | |
+| Swatinem/rust-cache | v2.9.3 `d1527c8f67ef9af357290475d4af4b0fab8f12e0` | |
+| mozilla-actions/sccache-action | v0.0.11 `fc920bf0ec8de6ee65d409111f7ec508035751ba` | |
+| maxim-lobanov/setup-xcode | v1.7.0 `ed7a3b1fda3918c0306d1b724322adc0b8cc0a90` | Selects `latest-stable` Xcode on the runner. |
+
+Rust crate versions are pinned by `zed/Cargo.lock`.
+
+## Phase 1: CI skeleton
+
+### Zed already contains an iOS GPUI platform (CLAUDE.md §2, §5)
+`CLAUDE.md` says to add an iOS platform "next to GPUI's existing macOS platform
+under `zed/crates/gpui/src/platform/`". In Zed v1.26.2 platforms are separate
+crates: `crates/gpui_macos`, `crates/gpui_apple` (the shared Metal renderer,
+Core Text text system, dispatcher, keychain, thermal), and an upstream
+**`crates/gpui_ios`** built on objc2 (`objc2-ui-kit`, `objc2-quartz-core`,
+`objc2-foundation`, Metal via `gpui_apple`). It already implements scenes, the
+`CAMetalLayer` view, safe areas, touch, scrolling, `UITextInput` with marked text,
+the software keyboard, memory warnings, thermal state, and a `CADisplayLink`.
+**Decision:** reuse and extend `gpui_ios` instead of writing a new platform. This
+is the "reuse, don't rewrite" rule applied to code that already exists upstream.
+
+### Metal shader build already targets iOS
+`gpui_apple/build.rs` already picks `iphoneos` / `iphonesimulator` from Cargo's
+target environment, so no change was needed. The only change is a fallback that
+writes a placeholder metallib when the *host* is not macOS, so the whole iOS
+build can be type-checked on Linux (it cannot be linked there anyway).
+
+### No Xcode project; the app bundle is assembled by a script
+`CLAUDE.md` §3 asks for an Xcode project in `/ios/App` with a Swift/ObjC shell
+(AppDelegate, SceneDelegates). Upstream `gpui_ios` already defines the app and
+scene delegates in Rust (objc2 `define_class!`) and starts `UIApplicationMain`
+from Rust, as winit does. A Swift shell would duplicate them. The executable is
+therefore the Rust binary itself, and `scripts/build_app.sh` assembles
+`ZiOS.app` (Info.plist, entitlements, frameworks, resources), splits the dSYM,
+and zips `Payload/ZiOS.app` into the `.ipa`. `/ios/App` holds the Info.plist and
+entitlements. Without `xcodebuild` there is no `CODE_SIGNING_ALLOWED=NO`; see
+the next item.
+
+### The ".ipa" is ad-hoc signed, not unsigned
+A truly unsigned binary carries no entitlements, and SideStore reads the
+entitlements it should request from the app's code signature. The device app is
+therefore **ad-hoc signed** (`codesign -s -`) with `ZiOS.entitlements`
+(`increased-memory-limit`, `get-task-allow`). An ad-hoc signature is not valid
+for installation by itself; SideStore re-signs it with the user's certificate.
+
+### Our crates join Zed's Cargo workspace
+`/crates/*` are members of `zed/Cargo.toml`'s workspace (via `package.workspace =
+"../../zed"`), so they share Zed's lockfile, dependency versions, and profiles.
+
+### Logging uses Zed's zlog
+Rather than a second logger, Zed's `zlog` is the only `log` backend. Two small
+additions to `zlog::sink`: a configurable rotation size (10 MB, so current +
+rotated ≈ 20 MB, matching §12b) and an extra sink that mirrors records to
+`os_log`. Logs live in `Library/Logs/Zed/` inside the app container.
+
+### Strict Simulator mode: interposer dylib
+Process creation (`posix_spawn`, `posix_spawnp`, `fork`, `vfork`, `execve`,
+`system`) and host file-system access are intercepted by
+`ios/Strict/zios_strict.c`, a dylib with `__DATA,__interpose` tuples. It is built
+by `crates/ios_bridge/build.rs` only when the `strict` feature is on **and** the
+target is the Simulator, and is linked (not injected with
+`DYLD_INSERT_LIBRARIES`) so strict mode applies however the app is launched.
+`ios_bridge` has a `compile_error!` if strict mode is ever enabled for a device
+target.
+
+The sandbox check is a **deny list** of host locations (`/Users`, `/tmp`,
+`/private/var/folders`, `/Volumes`, `/opt`, `/usr/local`, …) outside the simulated
+device's data directory and user-picked roots, rather than an allow list, because
+UIKit and Metal read many system paths that differ between Simulator runtimes.
+
+### Simulated memory limits are estimates
+Apple does not publish per-app limits. Public data points: developer reports of a
+~6 GB ceiling on 8 GB and 12 GB Pro iPhones with the entitlement
+([Apple forums 834805](https://developer.apple.com/forums/thread/834805)), and no
+measured figure for the 6 GB iPhone 15. CI uses **3072 MB** without the
+entitlement and **4096 MB** with it (about half and two thirds of RAM, consistent
+with older 6 GB devices). These are estimates; the Device Self-Test reports
+`os_proc_available_memory() + footprint` measured on the real phone so the
+constants in `ios_bridge::strict` can be corrected.

@@ -8895,6 +8895,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "inproc"
+version = "0.1.0"
+
+[[package]]
 name = "input_latency_ui"
 version = "0.1.0"
 dependencies = [
@@ -8997,6 +9001,19 @@ name = "io-lifetimes"
 version = "3.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2f0fb0570afe1fed943c5c3d4102d5358592d8625fda6a0007fdbe65a92fba96"
+
+[[package]]
+name = "ios_bridge"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "libc",
+ "log",
+ "oslog",
+ "parking_lot",
+ "tempfile",
+ "zlog",
+]
 
 [[package]]
 name = "iovec"
@@ -9882,6 +9899,10 @@ dependencies = [
  "url",
  "util",
 ]
+
+[[package]]
+name = "lanmouse_rx"
+version = "0.1.0"
 
 [[package]]
 name = "lazy_static"
@@ -12471,6 +12492,15 @@ checksum = "9aa2b01e1d916879f73a53d01d1d6cee68adbb31d6d9177a8cfce093cced1d50"
 dependencies = [
  "futures-core",
  "pin-project-lite",
+]
+
+[[package]]
+name = "oslog"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "80d2043d1f61d77cb2f4b1f7b7b2295f40507f5f8e9d1c8bf10a1ca5f97a3969"
+dependencies = [
+ "cc",
 ]
 
 [[package]]
@@ -18982,7 +19012,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2fb391ac70462b3097a755618fbf9c8f95ecc1eb379a414f7b46f202ed10db1f"
 dependencies = [
  "cc",
- "windows-targets 0.48.5",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -20798,7 +20828,7 @@ dependencies = [
  "objc2-foundation 0.3.2",
  "objc2-metal 0.3.2",
  "objc2-quartz-core 0.3.2",
- "ordered-float 4.6.0",
+ "ordered-float 5.5.0",
  "profiling",
  "range-alloc",
  "raw-window-handle",
@@ -23064,6 +23094,22 @@ dependencies = [
  "indoc",
  "serde",
  "strum 0.28.0",
+]
+
+[[package]]
+name = "zios_app"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "gpui",
+ "gpui_ios",
+ "gpui_platform",
+ "ios_bridge",
+ "log",
+ "objc2 0.6.3",
+ "objc2-foundation 0.3.2",
+ "objc2-ui-kit",
+ "zlog",
 ]
 
 [[package]]

@@ -1,0 +1,28 @@
+[package]
+name = "zios_app"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+workspace = "../../zed"
+
+[[bin]]
+name = "ZiOS"
+path = "src/main.rs"
+
+[features]
+# Strict Simulator mode; scripts/build_app.sh enables it for every Simulator build.
+strict = ["ios_bridge/strict"]
+
+[dependencies]
+anyhow.workspace = true
+ios_bridge.workspace = true
+log.workspace = true
+zlog.workspace = true
+
+[target.'cfg(target_os = "ios")'.dependencies]
+gpui.workspace = true
+gpui_ios.workspace = true
+gpui_platform.workspace = true
+objc2.workspace = true
+objc2-foundation.workspace = true
+objc2-ui-kit.workspace = true
