@@ -22,12 +22,30 @@ mod window {
 
     pub(crate) struct IosWindowState;
 
+    #[derive(Clone, Copy, PartialEq, Eq)]
+    pub(crate) enum PressPhase {
+        Began,
+        Ended,
+    }
+
     impl IosWindowState {
         pub(crate) fn with_input_handler<R>(
             &self,
             _callback: impl FnOnce(&mut PlatformInputHandler) -> R,
         ) -> Option<R> {
             None
+        }
+
+        // Hardware keys are covered by `gpui_ios::keys` tests; the fixture
+        // forwards every press to UIKit unchanged.
+        pub(crate) fn handle_presses(
+            &self,
+            presses: &objc2_foundation::NSSet<objc2_ui_kit::UIPress>,
+            _phase: PressPhase,
+            _from_text_input: bool,
+        ) -> objc2::rc::Retained<objc2_foundation::NSSet<objc2_ui_kit::UIPress>> {
+            use objc2::Message as _;
+            presses.retain()
         }
     }
 

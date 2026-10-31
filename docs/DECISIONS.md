@@ -91,3 +91,41 @@ entitlement and **4096 MB** with it (about half and two thirds of RAM, consisten
 with older 6 GB devices). These are estimates; the Device Self-Test reports
 `os_proc_available_memory() + footprint` measured on the real phone so the
 constants in `ios_bridge::strict` can be corrected.
+
+### Simulator builds are signed without entitlements
+The first CI run showed the Simulator refusing to launch an ad-hoc signed app
+that claims `increased-memory-limit` ("request was denied by service delegate
+(SBMainWorkspace)"). Simulator builds are signed ad hoc without entitlements;
+device builds keep them.
+
+## Phase 2: GPUI on iOS
+
+### Hardware keyboard
+Upstream `gpui_ios` had touch, scrolling and `UITextInput`, but no
+`pressesBegan`/`pressesEnded` handling, and its hidden text view is only first
+responder while the software keyboard is wanted. Added:
+
+- `gpui_ios::keys`: a UIKit-independent `UIKey` → `Keystroke` conversion that
+  follows `gpui_macos::events::parse_keystroke`, so Zed's **macOS keymap** works
+  unchanged (`cmd-s`, `cmd-shift-p`, shift-symbol folding, option-composed
+  characters, ASCII binding on non-ASCII layouts). iOS has no `UCKeyTranslate`,
+  so the "command layout" fallback uses a US-layout table keyed by HID usage.
+  Unit-tested on the CI runner.
+- `presses*` overrides on the Metal view and the text input view. GPUI sees
+  every key first (as on macOS). Unhandled keys that produce text go to UIKit's
+  text system when the text view is first responder (IME, dead keys), otherwise
+  they are inserted directly, as `gpui_linux` does.
+- The Metal view keeps first-responder status whenever the text view does not,
+  so shortcuts work with no text field focused.
+- **Key repeat:** UIKit only repeats keys that reach its text system, so keys
+  GPUI consumes (arrows, backspace, shortcuts) are repeated by GPUI, polled from
+  the existing display-link frame callback (400 ms delay, 33 ms interval).
+- Modifier keys produce `ModifiersChanged`; Caps Lock state is reported.
+
+The Simulator cannot receive synthetic hardware-key events from CI, so CI
+drives keystrokes through GPUI (`type:`/`key:` steps) and the UIKit mapping is
+covered by unit tests; the real key path is checked on the device
+(docs/DEVICE_TESTING.md).
+
+### Clipboard
+Upstream already maps GPUI's clipboard to `UIPasteboard` (text only).

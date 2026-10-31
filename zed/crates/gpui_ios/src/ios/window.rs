@@ -12,9 +12,11 @@
 use super::events::*;
 use super::text_input::TextInputView;
 use super::{CallbackSlot, IosDisplay, platform::IosPlatformState};
+use crate::keys::{KeyInput, KeyRepeat, key_input};
 use gpui::{
     AnyWindowHandle, BackGestureEvent, BackGesturePhase, Bounds, Capslock, Corners, DevicePixels,
-    DispatchEventResult, DisplayId, Edges, GpuSpecs, Modifiers, Pixels, PlatformAtlas,
+    DispatchEventResult, DisplayId, Edges, GpuSpecs, KeyDownEvent, KeyUpEvent, Keystroke,
+    Modifiers, ModifiersChangedEvent, Pixels, PlatformAtlas,
     PlatformDisplay, PlatformInput, PlatformInputHandler, PlatformWindow, Point, PromptButton,
     PromptLevel, RequestFrameOptions, Scene, Size, TextInputConfiguration, TextInputStateChange,
     TouchEvent, TouchId, TouchPhase, WindowAppearance, WindowBackgroundAppearance, WindowBounds,
@@ -24,7 +26,8 @@ use gpui_apple::metal_renderer::{Context as MetalContext, MetalRenderer};
 use objc2::rc::Retained;
 use objc2::runtime::{AnyClass, AnyObject, ProtocolObject};
 use objc2::{
-    ClassType, DefinedClass, MainThreadMarker, MainThreadOnly, define_class, msg_send, sel,
+    ClassType, DefinedClass, MainThreadMarker, MainThreadOnly, Message, define_class, msg_send,
+    sel,
 };
 use objc2_core_foundation::{CGPoint, CGRect, CGSize};
 use objc2_foundation::{
@@ -38,7 +41,8 @@ use objc2_ui_kit::{
 use objc2_ui_kit::{
     UICornerConfiguration, UICornerRadius, UIEvent, UIGestureRecognizer,
     UIGestureRecognizerDelegate, UIPanGestureRecognizer, UIRectCorner, UIRectEdge, UIScreen,
-    UIScreenEdgePanGestureRecognizer, UIScrollTypeMask, UITouch, UITraitCollection,
+    UIPress, UIPressesEvent, UIScreenEdgePanGestureRecognizer, UIScrollTypeMask, UITextRange,
+    UITouch, UITraitCollection,
     UITraitEnvironment, UIUserInterfaceLayoutDirection, UIUserInterfaceStyle, UIView,
     UIViewAutoresizing, UIViewController, UIWindow, UIWindowScene,
 };
@@ -184,6 +188,52 @@ define_class!(
             self.handle_touches(touches, event);
         }
 
+        // Hardware-keyboard presses arrive at the first responder. The Metal view
+        // holds that role whenever the hidden text input view does not.
+        #[unsafe(method(canBecomeFirstResponder))]
+        fn can_become_first_responder(&self) -> bool {
+            true
+        }
+
+        #[unsafe(method(pressesBegan:withEvent:))]
+        fn presses_began(&self, presses: &NSSet<UIPress>, event: Option<&UIPressesEvent>) {
+            let forwarded = self.ivars().with_window(|window| {
+                window.handle_presses(presses, PressPhase::Began, false)
+            });
+            let forwarded = forwarded.unwrap_or_else(|| presses.retain());
+            if !forwarded.is_empty() {
+                unsafe {
+                    let _: () = msg_send![super(self), pressesBegan: &*forwarded, withEvent: event];
+                }
+            }
+        }
+
+        #[unsafe(method(pressesEnded:withEvent:))]
+        fn presses_ended(&self, presses: &NSSet<UIPress>, event: Option<&UIPressesEvent>) {
+            let forwarded = self.ivars().with_window(|window| {
+                window.handle_presses(presses, PressPhase::Ended, false)
+            });
+            let forwarded = forwarded.unwrap_or_else(|| presses.retain());
+            if !forwarded.is_empty() {
+                unsafe {
+                    let _: () = msg_send![super(self), pressesEnded: &*forwarded, withEvent: event];
+                }
+            }
+        }
+
+        #[unsafe(method(pressesCancelled:withEvent:))]
+        fn presses_cancelled(&self, presses: &NSSet<UIPress>, event: Option<&UIPressesEvent>) {
+            let forwarded = self.ivars().with_window(|window| {
+                window.handle_presses(presses, PressPhase::Ended, false)
+            });
+            let forwarded = forwarded.unwrap_or_else(|| presses.retain());
+            if !forwarded.is_empty() {
+                unsafe {
+                    let _: () = msg_send![super(self), pressesCancelled: &*forwarded, withEvent: event];
+                }
+            }
+        }
+
         #[unsafe(method(handleScroll:))]
         fn handle_scroll(&self, recognizer: &UIPanGestureRecognizer) {
             self.ivars()
@@ -286,7 +336,19 @@ pub(crate) struct IosWindowState {
     mouse_position: Cell<Point<Pixels>>,
     /// Current modifiers
     modifiers: Cell<Modifiers>,
+    capslock: Cell<Capslock>,
+    /// The hardware key GPUI is repeating, if any.
+    key_repeat: RefCell<Option<KeyRepeat>>,
+    /// HID usages of presses whose `pressesBegan` was forwarded to UIKit; only
+    /// those get their end forwarded too.
+    forwarded_presses: RefCell<Vec<isize>>,
     renderer: Mutex<MetalRenderer>,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum PressPhase {
+    Began,
+    Ended,
 }
 
 impl IosWindow {
@@ -445,6 +507,9 @@ impl IosWindow {
             keyboard_height: Cell::new(0.),
             mouse_position: Cell::new(Point::default()),
             modifiers: Cell::new(Modifiers::default()),
+            capslock: Cell::new(Capslock::default()),
+            key_repeat: RefCell::new(None),
+            forwarded_presses: RefCell::new(Vec::new()),
             renderer: Mutex::new(renderer),
         };
 
@@ -464,6 +529,7 @@ impl IosWindow {
         self.text_input_view.set_window(window);
 
         self.state.register_keyboard_observers();
+        self.state.claim_key_focus();
     }
 }
 
@@ -636,6 +702,8 @@ impl IosWindowState {
     }
 
     pub(super) fn request_frame(&self) {
+        self.claim_key_focus();
+        self.repeat_held_key();
         self.request_frame_callback.with(|callback| {
             let force_render = self.force_next_frame.replace(false);
             callback(RequestFrameOptions {
@@ -643,6 +711,162 @@ impl IosWindowState {
                 ..Default::default()
             });
         });
+    }
+
+    /// Keeps a first responder for hardware keys: the text input view while it
+    /// edits, otherwise the Metal view. Nothing is claimed while UIKit presents
+    /// its own controller (Safari, document picker), which needs the keyboard.
+    fn claim_key_focus(&self) {
+        if !self.window.isKeyWindow()
+            || self.view_controller.presentedViewController().is_some()
+            || self.text_input_view.isFirstResponder()
+            || self.view.isFirstResponder()
+        {
+            return;
+        }
+        self.view.becomeFirstResponder();
+    }
+
+    /// Handles hardware-key presses from the first responder and returns the
+    /// presses UIKit should still process (pass to `super`).
+    ///
+    /// GPUI sees every key first, as on macOS. A key GPUI does not handle that
+    /// produces text goes to UIKit's text system when the text input view is the
+    /// responder (so IME and dead keys work), and is inserted directly otherwise.
+    pub(super) fn handle_presses(
+        &self,
+        presses: &NSSet<UIPress>,
+        phase: PressPhase,
+        from_text_input: bool,
+    ) -> Retained<NSSet<UIPress>> {
+        let main_thread = MainThreadMarker::from(&*self.view);
+        let mut forwarded = Vec::new();
+        for press in presses {
+            let Some(key) = press.key(main_thread) else {
+                // Not a keyboard press (for example, a remote or game controller).
+                forwarded.push(press);
+                continue;
+            };
+            let raw = raw_key(&key);
+            let forward = match phase {
+                PressPhase::Began => {
+                    let forward = self.key_began(&raw, from_text_input);
+                    if forward {
+                        self.forwarded_presses.borrow_mut().push(raw.hid_usage);
+                    }
+                    forward
+                }
+                PressPhase::Ended => {
+                    self.key_ended(&raw);
+                    let mut forwarded_presses = self.forwarded_presses.borrow_mut();
+                    let position = forwarded_presses.iter().position(|usage| *usage == raw.hid_usage);
+                    position.map(|index| forwarded_presses.swap_remove(index)).is_some()
+                }
+            };
+            if forward {
+                forwarded.push(press);
+            }
+        }
+        NSSet::from_retained_slice(&forwarded)
+    }
+
+    fn key_began(&self, raw: &crate::keys::RawKey, from_text_input: bool) -> bool {
+        self.set_modifiers(raw.modifiers, Capslock { on: raw.capslock });
+        let keystroke = match key_input(raw) {
+            KeyInput::Modifiers(..) => return true,
+            KeyInput::Key(keystroke) => keystroke,
+        };
+        // While the IME composes, keys belong to it.
+        if from_text_input && self.text_input_has_marked_text() {
+            return true;
+        }
+        self.key_repeat.borrow_mut().take();
+
+        let handled = self.dispatch_key_down(&keystroke, false);
+        let forward = !handled && from_text_input && keystroke.key_char.is_some();
+        if !handled && !forward {
+            self.insert_key_char(&keystroke);
+        }
+        // UIKit repeats what reaches its text system; GPUI repeats the rest.
+        if !forward && KeyRepeat::repeats(&keystroke) {
+            *self.key_repeat.borrow_mut() =
+                Some(KeyRepeat::new(keystroke, std::time::Instant::now()));
+        }
+        forward
+    }
+
+    fn key_ended(&self, raw: &crate::keys::RawKey) {
+        let keystroke = match key_input(raw) {
+            KeyInput::Modifiers(modifiers, capslock) => {
+                // Modifier flags on a key-up still include the released key on
+                // some keyboards; the next event corrects them.
+                self.set_modifiers(modifiers, capslock);
+                return;
+            }
+            KeyInput::Key(keystroke) => keystroke,
+        };
+        let mut key_repeat = self.key_repeat.borrow_mut();
+        if key_repeat
+            .as_ref()
+            .is_some_and(|repeat| repeat.keystroke().key == keystroke.key)
+        {
+            key_repeat.take();
+        }
+        drop(key_repeat);
+        self.input_callback
+            .with(|callback| callback(PlatformInput::KeyUp(KeyUpEvent { keystroke })));
+    }
+
+    fn set_modifiers(&self, modifiers: Modifiers, capslock: Capslock) {
+        if self.modifiers.get() == modifiers && self.capslock.get() == capslock {
+            return;
+        }
+        self.modifiers.set(modifiers);
+        self.capslock.set(capslock);
+        self.input_callback.with(|callback| {
+            callback(PlatformInput::ModifiersChanged(ModifiersChangedEvent {
+                modifiers,
+                capslock,
+            }))
+        });
+    }
+
+    fn dispatch_key_down(&self, keystroke: &Keystroke, is_held: bool) -> bool {
+        self.input_callback
+            .with(|callback| {
+                callback(PlatformInput::KeyDown(KeyDownEvent {
+                    keystroke: keystroke.clone(),
+                    is_held,
+                    prefer_character_input: false,
+                }))
+            })
+            .is_some_and(|result| !result.propagate)
+    }
+
+    fn insert_key_char(&self, keystroke: &Keystroke) {
+        if let Some(key_char) = &keystroke.key_char {
+            self.input_handler
+                .with(|handler| handler.replace_text_in_range(None, key_char));
+        }
+    }
+
+    fn text_input_has_marked_text(&self) -> bool {
+        let marked: Option<Retained<UITextRange>> =
+            unsafe { msg_send![&*self.text_input_view, markedTextRange] };
+        marked.is_some()
+    }
+
+    fn repeat_held_key(&self) {
+        let due = self.key_repeat.borrow_mut().as_mut().and_then(|repeat| {
+            repeat
+                .poll(std::time::Instant::now())
+                .then(|| repeat.keystroke().clone())
+        });
+        if let Some(keystroke) = due {
+            if !self.dispatch_key_down(&keystroke, true) {
+                self.insert_key_char(&keystroke);
+            }
+        }
     }
 
     /// Query the safe area insets from the UIView.
@@ -729,6 +953,11 @@ impl IosWindowState {
     /// Notify the window when its UIKit scene becomes active or inactive.
     pub fn notify_active_status_change(&self, is_active: bool) {
         log::info!("GPUI iOS: Window active status changed to: {}", is_active);
+        if !is_active {
+            // Key-up events are not delivered while inactive.
+            self.key_repeat.borrow_mut().take();
+            self.forwarded_presses.borrow_mut().clear();
+        }
 
         self.active_status_callback
             .with(|callback| callback(is_active));
@@ -886,8 +1115,7 @@ impl PlatformWindow for IosWindow {
     }
 
     fn capslock(&self) -> Capslock {
-        // Would need to check UIKeyModifierFlags
-        Capslock { on: false }
+        self.capslock.get()
     }
 
     fn set_input_handler(&mut self, input_handler: PlatformInputHandler) {

@@ -1,4 +1,4 @@
-use super::window::{IosWindowState, WindowReference};
+use super::window::{IosWindowState, PressPhase, WindowReference};
 use gpui::{
     Autocapitalize, PlatformInputHandler, TextInputAction, TextInputConfiguration,
     TextInputStateChange, px,
@@ -9,7 +9,7 @@ use objc2::{DefinedClass, MainThreadMarker, MainThreadOnly, Message, define_clas
 use objc2_core_foundation::{CGPoint, CGRect, CGSize};
 use objc2_foundation::{
     NSArray, NSAttributedStringKey, NSComparisonResult, NSCopying, NSDictionary,
-    NSObjectNSDelayedPerforming, NSObjectProtocol, NSRange, NSString,
+    NSObjectNSDelayedPerforming, NSObjectProtocol, NSRange, NSSet, NSString,
 };
 use objc2_ui_kit::*;
 use std::{
@@ -153,6 +153,45 @@ define_class!(
                 self.ivars().keyboard_eligible.set(false);
             }
             resigned
+        }
+
+        #[unsafe(method(pressesBegan:withEvent:))]
+        fn presses_began(&self, presses: &NSSet<UIPress>, event: Option<&UIPressesEvent>) {
+            let forwarded = self.ivars().window.with_window(|window| {
+                window.handle_presses(presses, PressPhase::Began, true)
+            });
+            let forwarded = forwarded.unwrap_or_else(|| presses.retain());
+            if !forwarded.is_empty() {
+                unsafe {
+                    let _: () = msg_send![super(self), pressesBegan: &*forwarded, withEvent: event];
+                }
+            }
+        }
+
+        #[unsafe(method(pressesEnded:withEvent:))]
+        fn presses_ended(&self, presses: &NSSet<UIPress>, event: Option<&UIPressesEvent>) {
+            let forwarded = self.ivars().window.with_window(|window| {
+                window.handle_presses(presses, PressPhase::Ended, true)
+            });
+            let forwarded = forwarded.unwrap_or_else(|| presses.retain());
+            if !forwarded.is_empty() {
+                unsafe {
+                    let _: () = msg_send![super(self), pressesEnded: &*forwarded, withEvent: event];
+                }
+            }
+        }
+
+        #[unsafe(method(pressesCancelled:withEvent:))]
+        fn presses_cancelled(&self, presses: &NSSet<UIPress>, event: Option<&UIPressesEvent>) {
+            let forwarded = self.ivars().window.with_window(|window| {
+                window.handle_presses(presses, PressPhase::Ended, true)
+            });
+            let forwarded = forwarded.unwrap_or_else(|| presses.retain());
+            if !forwarded.is_empty() {
+                unsafe {
+                    let _: () = msg_send![super(self), pressesCancelled: &*forwarded, withEvent: event];
+                }
+            }
         }
 
         #[unsafe(method(reconcileTextInput))]

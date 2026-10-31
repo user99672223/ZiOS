@@ -6,6 +6,7 @@
 
 #[cfg(target_os = "ios")]
 pub mod ios;
+pub mod keys;
 
 #[cfg(target_os = "ios")]
 pub use ios::{IosPlatform, current_platform};

@@ -26,9 +26,11 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           cache-key: tests
-      - name: cargo test (inproc, lanmouse_rx, ios_bridge)
+      - name: cargo test (inproc, lanmouse_rx, ios_bridge, iOS key mapping)
         working-directory: zed
-        run: cargo test -p inproc -p lanmouse_rx -p ios_bridge
+        run: |
+          cargo test -p inproc -p lanmouse_rx -p ios_bridge
+          cargo test -p gpui_ios --lib
 
   simulator:
     name: Simulator build and strict test pass
@@ -61,6 +63,7 @@ jobs:
           path: |
             build/sim-results/**/*.txt
             build/sim-results/logs/**
+            build/sim-results/crash-reports/**
           if-no-files-found: warn
 
   device:

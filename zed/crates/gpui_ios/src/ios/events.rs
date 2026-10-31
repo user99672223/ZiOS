@@ -109,7 +109,7 @@ pub fn scroll_event(recognizer: &UIPanGestureRecognizer, view: &UIView) -> Optio
     })
 }
 
-fn modifiers(flags: UIKeyModifierFlags) -> Modifiers {
+pub(super) fn modifiers(flags: UIKeyModifierFlags) -> Modifiers {
     Modifiers {
         control: flags.contains(UIKeyModifierFlags::Control),
         alt: flags.contains(UIKeyModifierFlags::Alternate),
@@ -125,4 +125,16 @@ pub fn touch_force(touch: &UITouch) -> Option<f32> {
         return None;
     }
     Some((touch.force() / maximum_force).clamp(0.0, 1.0) as f32)
+}
+
+/// Extracts what keystroke conversion needs from a hardware-key press.
+pub fn raw_key(key: &objc2_ui_kit::UIKey) -> crate::keys::RawKey {
+    let flags = key.modifierFlags();
+    crate::keys::RawKey {
+        hid_usage: key.keyCode().0,
+        characters: key.characters().to_string(),
+        characters_ignoring_modifiers: key.charactersIgnoringModifiers().to_string(),
+        modifiers: modifiers(flags),
+        capslock: flags.contains(UIKeyModifierFlags::AlphaShift),
+    }
 }

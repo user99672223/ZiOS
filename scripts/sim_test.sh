@@ -97,7 +97,7 @@ for jit in off on; do
     log "pass: ZED_IOS_FORCE_JIT=$jit, ZED_IOS_MEMORY_CAP_MB=$cap"
 
     # Main scenario: render, take a screenshot, survive a real UIKit memory warning.
-    pid="$(launch "main-jit-$jit" "wait:4000;mark:main;memory_warning;wait:2000;mark:after_memory_warning" \
+    pid="$(launch "main-jit-$jit" "wait:4000;type:hello zed;key:cmd-s;wait:500;mark:main;memory_warning;wait:2000;mark:after_memory_warning" \
         ZED_IOS_FORCE_JIT="$jit" ZED_IOS_MEMORY_CAP_MB="$cap")"
     if wait_for_mark main; then
         screenshot "main-jit-$jit"
@@ -113,6 +113,7 @@ for jit in off on; do
         fail "jit=$jit: app did not survive the memory warning"
     fi
     grep -q "strict interposer loaded: true" "$logs/Zed.log" || fail "jit=$jit: strict interposer not loaded"
+    grep -q "key down: cmd-s" "$logs/Zed.log" || fail "jit=$jit: keystrokes did not reach the view"
     grep -q "force_jit: $(tr '[:lower:]' '[:upper:]' <<< "${jit:0:1}")${jit:1}" "$logs/Zed.log" ||
         fail "jit=$jit: ZED_IOS_FORCE_JIT was not applied"
     save_logs "main-jit-$jit"
@@ -148,6 +149,16 @@ fi
 save_logs jetsam-test
 
 if ((${#failures[@]})); then
+    log "collecting system logs and crash reports"
+    xcrun simctl spawn "$device" log show --last 10m --style compact \
+        --predicate 'process == "ZiOS" OR eventMessage CONTAINS "dev.zios.app"' \
+        > "$output/system-log.txt" 2>&1 || true
+    tail -n 60 "$output/system-log.txt" || true
+    mkdir -p "$output/crash-reports"
+    cp ~/Library/Logs/DiagnosticReports/ZiOS* "$output/crash-reports/" 2>/dev/null || true
+    for report in "$output"/crash-reports/*; do
+        [[ -f "$report" ]] && head -n 80 "$report"
+    done
     printf '\n%d failure(s):\n' "${#failures[@]}"
     printf '  - %s\n' "${failures[@]}"
     exit 1

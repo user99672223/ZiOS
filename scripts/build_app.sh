@@ -137,7 +137,13 @@ if [[ -d "$app/Frameworks" ]]; then
     find "$app/Frameworks" \( -name '*.dylib' -o -name '*.framework' \) -maxdepth 1 -print0 |
         xargs -0 -I{} codesign --force --sign - --timestamp=none {}
 fi
-codesign --force --sign - --timestamp=none --entitlements "$entitlements" "$app"
+if [[ "$platform" == device ]]; then
+    codesign --force --sign - --timestamp=none --entitlements "$entitlements" "$app"
+else
+    # The Simulator refuses to launch ad-hoc signed apps that claim restricted
+    # entitlements such as increased-memory-limit, so sign without them.
+    codesign --force --sign - --timestamp=none "$app"
+fi
 
 if [[ "$platform" == device ]]; then
     echo "==> packaging ZiOS.ipa"

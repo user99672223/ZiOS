@@ -1,6 +1,9 @@
 use std::time::Duration;
 
-use gpui::{App, Context, Window, WindowOptions, div, prelude::*, rgb};
+use gpui::{
+    AnyWindowHandle, App, Context, FocusHandle, KeyDownEvent, Window, WindowOptions, div,
+    prelude::*, rgb,
+};
 use ios_bridge::{
     memory::{self, WarningSource},
     strict::StrictConfig,
@@ -13,21 +16,34 @@ pub fn run(strict: StrictConfig) {
         cx.on_memory_warning(|_cx| memory::raise_warning(WarningSource::System))
             .detach();
 
-        let window = cx.open_window(WindowOptions::default(), |_, cx| {
-            cx.new(|cx| StatusView::new(strict.clone(), cx))
+        let window = cx.open_window(WindowOptions::default(), |window, cx| {
+            cx.new(|cx| {
+                let view = StatusView::new(strict.clone(), cx);
+                window.focus(&view.focus_handle, cx);
+                view
+            })
         });
-        match window {
-            Ok(_) => log::info!("main window opened"),
-            Err(error) => log::error!("failed to open main window: {error:#}"),
-        }
+        let window: Option<AnyWindowHandle> = match window {
+            Ok(window) => {
+                log::info!("main window opened");
+                Some(window.into())
+            }
+            Err(error) => {
+                log::error!("failed to open main window: {error:#}");
+                None
+            }
+        };
         cx.activate(true);
-        crate::ci::start(cx);
+        crate::ci::start(window, cx);
     });
 }
 
 struct StatusView {
     strict: StrictConfig,
     memory_warnings: usize,
+    focus_handle: FocusHandle,
+    last_keystroke: Option<String>,
+    typed: String,
 }
 
 impl StatusView {
@@ -56,13 +72,37 @@ impl StatusView {
         Self {
             strict,
             memory_warnings: 0,
+            focus_handle: cx.focus_handle(),
+            last_keystroke: None,
+            typed: String::new(),
         }
+    }
+
+    fn key_down(&mut self, event: &KeyDownEvent, _window: &mut Window, cx: &mut Context<Self>) {
+        let keystroke = &event.keystroke;
+        log::info!("key down: {} (held: {})", keystroke.unparse(), event.is_held);
+        self.last_keystroke = Some(keystroke.unparse());
+        let modified = keystroke.modifiers.platform || keystroke.modifiers.control;
+        match keystroke.key.as_str() {
+            "backspace" if !modified => {
+                self.typed.pop();
+            }
+            _ if !modified => {
+                if let Some(key_char) = &keystroke.key_char {
+                    self.typed.push_str(key_char);
+                }
+            }
+            _ => {}
+        }
+        cx.stop_propagation();
+        cx.notify();
     }
 }
 
 impl Render for StatusView {
-    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
-        let footprint = memory::footprint_bytes().map_or_else(|| "unknown".into(), memory::format_bytes);
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let footprint =
+            memory::footprint_bytes().map_or_else(|| "unknown".into(), memory::format_bytes);
         let cap = self
             .strict
             .memory_cap_mb
@@ -70,17 +110,26 @@ impl Render for StatusView {
         let log_path = ios_bridge::logging::log_paths()
             .map(|paths| paths.current.display().to_string())
             .unwrap_or_else(|| "unavailable".into());
+        let strict = if ios_bridge::strict::ENABLED { "on" } else { "off" };
         let rows = [
-            ("Strict mode", if ios_bridge::strict::ENABLED { "on".to_string() } else { "off".to_string() }),
+            ("Strict mode", strict.to_string()),
             ("Forced JIT", format!("{:?}", self.strict.force_jit)),
             ("Memory cap", cap),
             ("Footprint", footprint),
             ("Memory warnings", self.memory_warnings.to_string()),
             ("Log", log_path),
+            (
+                "Last key",
+                self.last_keystroke
+                    .clone()
+                    .unwrap_or_else(|| "press a key on a hardware keyboard".into()),
+            ),
         ];
 
         div()
             .id("status")
+            .track_focus(&self.focus_handle)
+            .on_key_down(cx.listener(Self::key_down))
             .size_full()
             .flex()
             .flex_col()
@@ -90,7 +139,11 @@ impl Render for StatusView {
             .bg(rgb(0x1e2128))
             .text_color(rgb(0xdce0e5))
             .child(div().text_3xl().child("Zed for iPhone"))
-            .child(div().text_color(rgb(0x8b929e)).child("Phase 1: platform skeleton"))
+            .child(
+                div()
+                    .text_color(rgb(0x8b929e))
+                    .child("Phase 2: GPUI on iOS with hardware keyboard"),
+            )
             .children(rows.into_iter().map(|(label, value)| {
                 div()
                     .flex()
@@ -98,5 +151,16 @@ impl Render for StatusView {
                     .child(div().text_sm().text_color(rgb(0x8b929e)).child(label))
                     .child(div().child(value))
             }))
+            .child(
+                div()
+                    .mt_2()
+                    .p_3()
+                    .rounded_md()
+                    .border_1()
+                    .border_color(rgb(0x464b57))
+                    .bg(rgb(0x2f343e))
+                    .font_family("Menlo")
+                    .child(format!("{}▏", self.typed)),
+            )
     }
 }
