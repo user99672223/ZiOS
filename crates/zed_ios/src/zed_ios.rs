@@ -3,6 +3,7 @@
 //! display companion here.
 
 pub mod ci;
+pub mod diagnostics;
 #[cfg(target_os = "ios")]
 pub mod display;
 pub mod lan_mouse;
@@ -28,5 +29,6 @@ pub fn init(app_state: Arc<AppState>, cx: &mut App) {
     display::init(cx);
     lan_mouse::init(cx);
     status::init(cx);
+    diagnostics::init(cx);
     ci::start(app_state, cx);
 }
