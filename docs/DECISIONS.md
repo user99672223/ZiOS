@@ -214,6 +214,10 @@ still abort with a report. Process creation always aborts.
 - Zed's single process-spawning chokepoint, `util::command`, gets an iOS
   backend (`command/ios.rs`) with the macOS backend's exact builder API, so no
   call site changes. Unregistered programs fail with `NotFound`.
-- ios_system v3.0.7 frameworks are downloaded by `scripts/fetch_ios_system.sh`
+- ios_system frameworks are downloaded from the v3.0.6 release: v3.0.7 is
+  tagged and referenced by `master`'s `Package.swift`, but its assets return
+  404. The v3.0.6 assets were re-uploaded on 2026-10-02 and match `master`'s
+  checksums byte for byte, so those checksums and the v3.0.7 command
+  dictionaries are pinned. They are downloaded by `scripts/fetch_ios_system.sh`
   with the checksums from its `Package.swift`, and commands it knows run
   through it when no Rust program is registered under the name.

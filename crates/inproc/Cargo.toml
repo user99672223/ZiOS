@@ -17,3 +17,6 @@ libc.workspace = true
 
 [target.'cfg(target_os = "ios")'.dependencies]
 ios_system_sys.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

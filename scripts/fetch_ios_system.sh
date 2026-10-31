@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
-# Downloads ios_system's released xcframeworks (v3.0.7) into ios/Frameworks and
+# Downloads ios_system's released xcframeworks (v3.0.6) into ios/Frameworks and
 # verifies them against the checksums in ios_system's Package.swift.
 #
 # The command dictionaries that map command names to these frameworks are kept
-# in ios/App/Resources (copied from the same tag).
+# in ios/App/Resources (copied from tag v3.0.7, which matches these binaries).
 set -euo pipefail
 
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 destination="$repository_root/ios/Frameworks"
-version="v3.0.7"
+version="v3.0.6"
 base="https://github.com/holzschu/ios_system/releases/download/$version"
 
-# name checksum (from Package.swift at tag v3.0.7)
+# name checksum. The v3.0.7 release has no assets; the files served under v3.0.6
+# were re-uploaded (2026-10-02) and match the checksums in ios_system's master
+# Package.swift (commit b51dd90d), which are pinned here.
 frameworks=(
     "ios_system c9c6dc4cde45cc271ccc8bd0553ce4d3149eced1f0ee3d9e0ce01885d93526e6"
     "awk 675d3b2e3b5ba60ae1a727528b2cf5e11eda262d404c1e9708dc7e061898df86"

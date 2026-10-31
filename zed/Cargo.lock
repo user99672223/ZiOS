@@ -9111,6 +9111,7 @@ dependencies = [
  "libc",
  "log",
  "parking_lot",
+ "tempfile",
 ]
 
 [[package]]
@@ -18553,11 +18554,13 @@ dependencies = [
  "futures 0.3.34",
  "futures-lite 2.6.1",
  "gpui",
+ "inproc",
  "itertools 0.14.0",
  "libc",
  "log",
  "parking_lot",
  "percent-encoding",
+ "polling",
  "rand 0.9.4",
  "regex",
  "release_channel",

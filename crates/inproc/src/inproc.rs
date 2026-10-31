@@ -28,6 +28,8 @@ use std::{
 
 use parking_lot::{Mutex, RwLock};
 
+pub mod shell;
+
 /// Exit status for a program that panicked, as Rust uses for test failures.
 pub const PANIC_EXIT_CODE: i32 = 101;
 /// Exit status for a program stopped by `kill`, matching a shell's 128 + SIGKILL.

@@ -46,7 +46,11 @@ use crate::{
 
 pub(super) use hyperlinks::{HyperlinkMatch, RegexSearches};
 
+#[cfg(not(target_os = "ios"))]
 pub(super) type AlacrittyPty = tty::Pty;
+// iOS cannot start a shell process; the shell runs in-process (ZiOS).
+#[cfg(target_os = "ios")]
+pub(super) type AlacrittyPty = crate::ios_pty::IosPty;
 pub(super) type AlacrittyTerm = Term<ZedListener>;
 pub(super) type AlacrittyTermConfig = Config;
 pub(super) type AlacrittyTermLock = FairMutex<AlacrittyTerm>;
@@ -65,10 +69,17 @@ pub(super) struct AlacrittySearch {
     search: RegexSearch,
 }
 
-#[cfg(unix)]
+#[cfg(all(unix, not(target_os = "ios")))]
 impl From<&AlacrittyPty> for ProcessIdGetter {
     fn from(pty: &AlacrittyPty) -> Self {
         Self::new(pty.file().as_raw_fd(), pty.child().id())
+    }
+}
+
+#[cfg(target_os = "ios")]
+impl From<&AlacrittyPty> for ProcessIdGetter {
+    fn from(pty: &AlacrittyPty) -> Self {
+        Self::new(pty.raw_fd(), pty.id())
     }
 }
 
@@ -180,12 +191,25 @@ pub(super) fn pty_options(
     }
 }
 
+#[cfg(not(target_os = "ios"))]
 pub(super) fn open_pty(
     options: &tty::Options,
     bounds: TerminalBounds,
     window_id: u64,
 ) -> io::Result<AlacrittyPty> {
     tty::new(options, window_size_from_terminal_bounds(bounds), window_id)
+}
+
+#[cfg(target_os = "ios")]
+pub(super) fn open_pty(
+    options: &tty::Options,
+    bounds: TerminalBounds,
+    _window_id: u64,
+) -> io::Result<AlacrittyPty> {
+    crate::ios_pty::IosPty::new(
+        options.working_directory.clone(),
+        window_size_from_terminal_bounds(bounds),
+    )
 }
 
 pub(super) fn new_term(

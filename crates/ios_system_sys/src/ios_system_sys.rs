@@ -1,4 +1,4 @@
-//! Bindings to ios_system (https://github.com/holzschu/ios_system, v3.0.7),
+//! Bindings to ios_system (https://github.com/holzschu/ios_system, v3.0.6),
 //! which runs Unix commands as threads inside an iOS app.
 
 #![cfg_attr(ios_system_missing, allow(unused_imports, dead_code))]

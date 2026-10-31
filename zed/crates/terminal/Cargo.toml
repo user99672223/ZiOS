@@ -47,6 +47,10 @@ vte.workspace = true
 parking_lot.workspace = true
 percent-encoding.workspace = true
 
+[target.'cfg(target_os = "ios")'.dependencies]
+inproc.workspace = true
+polling = "3.8.0"
+
 [target.'cfg(windows)'.dependencies]
 windows.workspace = true
 

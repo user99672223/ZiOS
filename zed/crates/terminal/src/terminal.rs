@@ -1,6 +1,8 @@
 mod mappings;
 
 mod alacritty;
+#[cfg(target_os = "ios")]
+mod ios_pty;
 mod pty_info;
 pub mod terminal_settings;
 
