@@ -221,7 +221,28 @@ static int zios_path_is_forbidden(const char *path) {
 // the same thread would deadlock, so nested calls are not checked.
 static __thread int zios_checking;
 
+// Backtrace symbolization reads debug info from the build machine's object
+// files, whose paths the Simulator binary records. On a device those paths do
+// not exist and the lookup fails quietly, so allow read-only access to them.
+static int zios_is_debug_info_lookup(const char *path, int writes) {
+    if (writes || !path) return 0;
+    size_t length = strlen(path);
+    const char *suffixes[] = {".rlib", ".o", ".a"};
+    for (size_t index = 0; index < sizeof suffixes / sizeof *suffixes; index++) {
+        size_t suffix = strlen(suffixes[index]);
+        if (length > suffix && strcmp(path + length - suffix, suffixes[index]) == 0) return 1;
+    }
+    return strstr(path, ".dSYM/") != NULL;
+}
+
+static void zios_check_path_mode(const char *operation, const char *path, void *caller, int writes);
+
 static void zios_check_path(const char *operation, const char *path, void *caller) {
+    zios_check_path_mode(operation, path, caller, 0);
+}
+
+static void zios_check_path_mode(const char *operation, const char *path, void *caller, int writes) {
+    if (zios_is_debug_info_lookup(path, writes)) return;
     if (zios_reporting || zios_checking) return;
     zios_checking = 1;
     pthread_once(&zios_sandbox_once, zios_sandbox_init);
@@ -240,7 +261,8 @@ static void zios_check_path(const char *operation, const char *path, void *calle
 }
 
 static int zios_open(const char *path, int flags, ...) {
-    zios_check_path("open", path, __builtin_return_address(0));
+    zios_check_path_mode("open", path, __builtin_return_address(0),
+                         (flags & (O_WRONLY | O_RDWR | O_CREAT | O_TRUNC)) != 0);
     mode_t mode = 0;
     if (flags & O_CREAT) {
         va_list arguments;
@@ -253,7 +275,8 @@ static int zios_open(const char *path, int flags, ...) {
 ZIOS_INTERPOSE(zios_open, open);
 
 static int zios_openat(int directory, const char *path, int flags, ...) {
-    zios_check_path("openat", path, __builtin_return_address(0));
+    zios_check_path_mode("openat", path, __builtin_return_address(0),
+                         (flags & (O_WRONLY | O_RDWR | O_CREAT | O_TRUNC)) != 0);
     mode_t mode = 0;
     if (flags & O_CREAT) {
         va_list arguments;
@@ -290,20 +313,20 @@ static DIR *zios_opendir(const char *path) {
 ZIOS_INTERPOSE(zios_opendir, opendir);
 
 static int zios_mkdir(const char *path, mode_t mode) {
-    zios_check_path("mkdir", path, __builtin_return_address(0));
+    zios_check_path_mode("mkdir", path, __builtin_return_address(0), 1);
     return mkdir(path, mode);
 }
 ZIOS_INTERPOSE(zios_mkdir, mkdir);
 
 static int zios_unlink(const char *path) {
-    zios_check_path("unlink", path, __builtin_return_address(0));
+    zios_check_path_mode("unlink", path, __builtin_return_address(0), 1);
     return unlink(path);
 }
 ZIOS_INTERPOSE(zios_unlink, unlink);
 
 static int zios_rename(const char *from, const char *to) {
-    zios_check_path("rename", from, __builtin_return_address(0));
-    zios_check_path("rename", to, __builtin_return_address(0));
+    zios_check_path_mode("rename", from, __builtin_return_address(0), 1);
+    zios_check_path_mode("rename", to, __builtin_return_address(0), 1);
     return rename(from, to);
 }
 ZIOS_INTERPOSE(zios_rename, rename);

@@ -161,7 +161,7 @@ impl PlatformTextSystem for AppleTextSystem {
 
             let candidate_properties = candidates
                 .iter()
-                .map(|font_id| lock.fonts[font_id.0].properties())
+                .map(|font_id| font_properties(&lock.fonts[font_id.0]))
                 .collect::<SmallVec<[_; 4]>>();
 
             let ix = font_kit::matching::find_best_match(
@@ -330,7 +330,9 @@ impl AppleTextSystemState {
             // which unwraps a downcast to CFNumber. This is an attempt to avoid the panic,
             // and to try and identify the incalcitrant font.
             let traits = font.native_font().all_traits();
-            if unsafe {
+            // iOS system fonts often omit some traits; `font_properties` copes
+            // with that, so only macOS keeps skipping such fonts.
+            if cfg!(not(target_os = "ios")) && unsafe {
                 !(traits
                     .get(kCTFontSymbolicTrait)
                     .downcast::<CFNumber>()
@@ -717,6 +719,69 @@ fn bounds_from_rect_i(rect: RectI) -> Bounds<DevicePixels> {
 
 fn size_from_vector2f(vec: Vector2F) -> Size<f32> {
     size(vec.x(), vec.y())
+}
+
+/// `font_kit::Font::properties` without its panics: CoreText traits that are
+/// missing or not numbers fall back to normal values.
+fn font_properties(font: &FontKitFont) -> font_kit::properties::Properties {
+    use font_kit::properties::{Properties, Stretch};
+    let traits = font.native_font().all_traits();
+    let number = |key| unsafe {
+        traits
+            .find(key)
+            .and_then(|value| value.downcast::<CFNumber>())
+            .and_then(|number| number.to_f64())
+    };
+    const ITALIC: i64 = 1 << 0;
+    let symbolic = unsafe {
+        traits
+            .find(kCTFontSymbolicTrait)
+            .and_then(|value| value.downcast::<CFNumber>())
+            .and_then(|number| number.to_i64())
+    }
+    .unwrap_or(0);
+    let slant = number(kCTFontSlantTrait).unwrap_or(0.0);
+    let style = if symbolic & ITALIC != 0 || slant > 0.0 {
+        FontkitStyle::Italic
+    } else {
+        FontkitStyle::Normal
+    };
+    // CoreText weights run from -1 to 1; these are the anchors font-kit uses.
+    const ANCHORS: [(f64, f32); 9] = [
+        (-0.8, 100.0),
+        (-0.6, 200.0),
+        (-0.4, 300.0),
+        (0.0, 400.0),
+        (0.23, 500.0),
+        (0.3, 600.0),
+        (0.4, 700.0),
+        (0.56, 800.0),
+        (0.62, 900.0),
+    ];
+    let weight = number(kCTFontWeightTrait).map_or(400.0, |weight| {
+        ANCHORS
+            .windows(2)
+            .find(|pair| weight <= pair[1].0)
+            .map_or(ANCHORS[ANCHORS.len() - 1].1, |pair| {
+                let (low, high) = (pair[0], pair[1]);
+                if weight <= low.0 {
+                    return low.1;
+                }
+                let fraction = ((weight - low.0) / (high.0 - low.0)) as f32;
+                low.1 + fraction * (high.1 - low.1)
+            })
+    });
+    let width = number(kCTFontWidthTrait).unwrap_or(0.0);
+    let stretch = if width < 0.0 {
+        Stretch((1.0 + width as f32 * 0.5).max(Stretch::ULTRA_CONDENSED.0))
+    } else {
+        Stretch((1.0 + width as f32).min(Stretch::ULTRA_EXPANDED.0))
+    };
+    Properties {
+        style,
+        weight: FontkitWeight(weight),
+        stretch,
+    }
 }
 
 fn fontkit_weight(value: FontWeight) -> FontkitWeight {

@@ -399,8 +399,11 @@ impl Platform for IosPlatform {
         Ok(app_path.join(name))
     }
 
-    fn set_cursor_style(&self, _style: CursorStyle) {
-        // iOS doesn't have visible cursors (except for Apple Pencil hover on iPad)
+    fn set_cursor_style(&self, style: CursorStyle) {
+        // Only the remote-mouse pointer overlay shows a cursor on iOS.
+        self.0
+            .application
+            .with_windows(|window| window.set_pointer_style(style));
     }
 
     fn hide_cursor_until_mouse_moves(&self) {}
@@ -498,4 +501,19 @@ impl SFSafariViewController {
         #[unsafe(method_family = init)]
         unsafe fn init_with_url(this: objc2::rc::Allocated<Self>, url: &NSURL) -> Retained<Self>;
     );
+}
+
+/// Delivers input that did not come from UIKit, such as a lan-mouse peer, to the
+/// window that currently shows the editor.
+pub fn inject_input(input: gpui::PlatformInput) {
+    let Some(platform) = super::application::current_platform() else {
+        log::warn!("input injected before the iOS platform started");
+        return;
+    };
+    let mut input = Some(input);
+    platform.application.with_windows(|window| {
+        if let Some(input) = input.take() {
+            window.inject_input(input);
+        }
+    });
 }

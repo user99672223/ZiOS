@@ -23445,8 +23445,11 @@ name = "zed_ios"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "futures 0.3.34",
  "gpui",
+ "gpui_ios",
  "ios_bridge",
+ "lanmouse_rx",
  "log",
  "menu",
  "objc2 0.6.3",

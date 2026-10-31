@@ -11,8 +11,10 @@ doctest = false
 
 [dependencies]
 anyhow.workspace = true
+futures.workspace = true
 gpui.workspace = true
 ios_bridge.workspace = true
+lanmouse_rx.workspace = true
 log.workspace = true
 menu.workspace = true
 project.workspace = true
@@ -21,5 +23,6 @@ workspace.workspace = true
 zlog.workspace = true
 
 [target.'cfg(target_os = "ios")'.dependencies]
+gpui_ios.workspace = true
 objc2.workspace = true
 objc2-ui-kit.workspace = true

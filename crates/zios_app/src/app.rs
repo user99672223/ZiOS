@@ -159,7 +159,6 @@ impl Render for StatusView {
                     .border_1()
                     .border_color(rgb(0x464b57))
                     .bg(rgb(0x2f343e))
-                    .font_family("Menlo")
                     .child(format!("{}▏", self.typed)),
             )
     }

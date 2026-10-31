@@ -172,6 +172,59 @@ impl DeviceStatusModal {
             .child(Label::new(value).color(color))
     }
 
+    fn lan_mouse_rows(&self, cx: &mut Context<Self>) -> Vec<AnyElement> {
+        let status = match crate::lan_mouse::LanMouse::status(cx) {
+            Some(Ok(status)) => status,
+            Some(Err(error)) => {
+                return vec![Self::row("Receiver", error, Color::Error).into_any_element()];
+            }
+            None => return vec![Self::row("Receiver", "not running", Color::Muted).into_any_element()],
+        };
+        let mut rows = Vec::new();
+        let listening = match (status.port, &status.error) {
+            (Some(port), _) => (format!("listening on UDP {port}"), Color::Success),
+            (None, Some(error)) => (error.clone(), Color::Error),
+            (None, None) => ("starting".to_string(), Color::Muted),
+        };
+        rows.push(Self::row("Receiver", listening.0, listening.1).into_any_element());
+        let connection = match (status.active, status.peers.first()) {
+            (Some(active), _) => (format!("controlling: {active}"), Color::Success),
+            (None, Some((peer, _))) => (format!("connected: {peer}"), Color::Success),
+            (None, None) => ("no laptop connected".to_string(), Color::Muted),
+        };
+        rows.push(Self::row("Peer", connection.0, connection.1).into_any_element());
+        rows.push(
+            v_flex()
+                .child(Label::new("This iPhone's fingerprint").color(Color::Muted).size(LabelSize::Small))
+                .child(Label::new(status.fingerprint.clone()).size(LabelSize::XSmall))
+                .into_any_element(),
+        );
+        for (index, fingerprint) in status.pending_authorizations.iter().enumerate() {
+            let fingerprint = fingerprint.clone();
+            rows.push(
+                h_flex()
+                    .w_full()
+                    .justify_between()
+                    .gap_2()
+                    .child(
+                        Label::new(format!("Laptop wants to connect: {fingerprint}"))
+                            .size(LabelSize::XSmall)
+                            .color(Color::Warning),
+                    )
+                    .child(
+                        Button::new(("authorize-lan-mouse", index), "Authorize").on_click(
+                            cx.listener(move |_, _: &ClickEvent, _window, cx| {
+                                crate::lan_mouse::LanMouse::authorize(&fingerprint, cx);
+                                cx.notify();
+                            }),
+                        ),
+                    )
+                    .into_any_element(),
+            );
+        }
+        rows
+    }
+
     fn language_server_rows(&self, cx: &App) -> Vec<AnyElement> {
         let lsp_store = self.project.read(cx).lsp_store();
         let rows: Vec<AnyElement> = lsp_store
@@ -298,7 +351,7 @@ impl Render for DeviceStatusModal {
             .child(Self::section("External display"))
             .child(Self::row("Monitor", display_value, Color::Default))
             .child(Self::section("lan-mouse"))
-            .child(Self::row("Receiver", "not running", Color::Muted))
+            .children(self.lan_mouse_rows(cx))
             .children(addresses)
             .child(Self::section("Language servers"))
             .children(self.language_server_rows(cx))

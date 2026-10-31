@@ -342,6 +342,8 @@ pub(crate) struct IosWindowState {
     /// HID usages of presses whose `pressesBegan` was forwarded to UIKit; only
     /// those get their end forwarded too.
     forwarded_presses: RefCell<Vec<isize>>,
+    /// Pointer drawn over the editor while a remote mouse (lan-mouse) drives it.
+    pointer: RefCell<Option<PointerOverlay>>,
     renderer: Mutex<MetalRenderer>,
 }
 
@@ -510,6 +512,7 @@ impl IosWindow {
             capslock: Cell::new(Capslock::default()),
             key_repeat: RefCell::new(None),
             forwarded_presses: RefCell::new(Vec::new()),
+            pointer: RefCell::new(None),
             renderer: Mutex::new(renderer),
         };
 
@@ -704,6 +707,7 @@ impl IosWindowState {
     pub(super) fn request_frame(&self) {
         self.claim_key_focus();
         self.repeat_held_key();
+        self.hide_idle_pointer();
         self.request_frame_callback.with(|callback| {
             let force_render = self.force_next_frame.replace(false);
             callback(RequestFrameOptions {
@@ -866,6 +870,72 @@ impl IosWindowState {
             if !self.dispatch_key_down(&keystroke, true) {
                 self.insert_key_char(&keystroke);
             }
+        }
+    }
+
+    /// Delivers input from a source other than UIKit (the lan-mouse receiver)
+    /// through the same path as native input: keys that GPUI does not handle
+    /// insert text and repeat while held, and mouse input moves the drawn pointer.
+    pub(crate) fn inject_input(&self, input: PlatformInput) {
+        match input {
+            PlatformInput::KeyDown(event) => {
+                self.key_repeat.borrow_mut().take();
+                let handled = self.dispatch_key_down(&event.keystroke, event.is_held);
+                if !handled {
+                    self.insert_key_char(&event.keystroke);
+                }
+                if KeyRepeat::repeats(&event.keystroke) {
+                    *self.key_repeat.borrow_mut() =
+                        Some(KeyRepeat::new(event.keystroke, std::time::Instant::now()));
+                }
+            }
+            PlatformInput::KeyUp(event) => {
+                let mut key_repeat = self.key_repeat.borrow_mut();
+                if key_repeat
+                    .as_ref()
+                    .is_some_and(|repeat| repeat.keystroke().key == event.keystroke.key)
+                {
+                    key_repeat.take();
+                }
+                drop(key_repeat);
+                self.input_callback
+                    .with(|callback| callback(PlatformInput::KeyUp(event)));
+            }
+            PlatformInput::ModifiersChanged(event) => {
+                self.set_modifiers(event.modifiers, event.capslock);
+            }
+            input => {
+                let position = match &input {
+                    PlatformInput::MouseMove(event) => Some(event.position),
+                    PlatformInput::MouseDown(event) => Some(event.position),
+                    PlatformInput::MouseUp(event) => Some(event.position),
+                    PlatformInput::Scroll(event) => Some(event.position),
+                    _ => None,
+                };
+                if let Some(position) = position {
+                    self.mouse_position.set(position);
+                    self.show_pointer(position);
+                }
+                self.input_callback.with(|callback| callback(input));
+            }
+        }
+    }
+
+    pub(crate) fn set_pointer_style(&self, style: gpui::CursorStyle) {
+        if let Some(pointer) = self.pointer.borrow_mut().as_mut() {
+            pointer.set_style(style);
+        }
+    }
+
+    fn show_pointer(&self, position: Point<Pixels>) {
+        let mut pointer = self.pointer.borrow_mut();
+        let pointer = pointer.get_or_insert_with(|| PointerOverlay::new(&self.view));
+        pointer.move_to(position);
+    }
+
+    fn hide_idle_pointer(&self) {
+        if let Some(pointer) = self.pointer.borrow_mut().as_mut() {
+            pointer.hide_if_idle();
         }
     }
 
@@ -1328,5 +1398,88 @@ mod tests {
             assert_eq!(slot.take(), Some(2));
         });
         assert!(slot.take().is_none());
+    }
+}
+
+/// A pointer image over the Metal view. Moving a UIKit view is a Core Animation
+/// update that needs no GPUI frame, which keeps pointer latency independent of
+/// rendering.
+struct PointerOverlay {
+    image_view: Retained<objc2_ui_kit::UIImageView>,
+    style: gpui::CursorStyle,
+    last_moved: std::time::Instant,
+    visible: bool,
+}
+
+impl PointerOverlay {
+    const SIZE: f64 = 22.0;
+    const HIDE_AFTER: std::time::Duration = std::time::Duration::from_secs(3);
+
+    fn new(parent: &UIView) -> Self {
+        let main_thread = MainThreadMarker::from(parent);
+        let image_view = objc2_ui_kit::UIImageView::initWithImage(
+            objc2_ui_kit::UIImageView::alloc(main_thread),
+            Self::image(gpui::CursorStyle::Arrow).as_deref(),
+        );
+        image_view.setFrame(CGRect::new(CGPoint::ZERO, CGSize::new(Self::SIZE, Self::SIZE)));
+        image_view.setUserInteractionEnabled(false);
+        parent.addSubview(&image_view);
+        Self {
+            image_view,
+            style: gpui::CursorStyle::Arrow,
+            last_moved: std::time::Instant::now(),
+            visible: true,
+        }
+    }
+
+    /// SF Symbols matching GPUI's cursor shapes.
+    fn image(style: gpui::CursorStyle) -> Option<Retained<objc2_ui_kit::UIImage>> {
+        use gpui::CursorStyle::*;
+        let name = match style {
+            IBeam | IBeamCursorForVerticalLayout => "character.cursor.ibeam",
+            PointingHand => "hand.point.up.left.fill",
+            ResizeLeft | ResizeRight | ResizeLeftRight | ResizeColumn => "arrow.left.and.right",
+            ResizeUp | ResizeDown | ResizeUpDown | ResizeRow => "arrow.up.and.down",
+            OperationNotAllowed => "nosign",
+            ClosedHand | OpenHand => "hand.raised.fill",
+            Crosshair => "plus",
+            _ => "cursorarrow",
+        };
+        objc2_ui_kit::UIImage::systemImageNamed(&objc2_foundation::NSString::from_str(name))
+    }
+
+    fn set_style(&mut self, style: gpui::CursorStyle) {
+        if self.style != style {
+            self.style = style;
+            self.image_view.setImage(Self::image(style).as_deref());
+        }
+    }
+
+    fn move_to(&mut self, position: Point<Pixels>) {
+        // The arrow's hot spot is its tip; other shapes are centered.
+        let offset = if matches!(self.style, gpui::CursorStyle::Arrow) {
+            0.0
+        } else {
+            Self::SIZE / 2.0
+        };
+        self.image_view.setFrame(CGRect::new(
+            CGPoint::new(
+                f64::from(f32::from(position.x)) - offset,
+                f64::from(f32::from(position.y)) - offset,
+            ),
+            CGSize::new(Self::SIZE, Self::SIZE),
+        ));
+        if !self.visible {
+            self.image_view.setHidden(false);
+            self.visible = true;
+        }
+        self.last_moved = std::time::Instant::now();
+    }
+
+    fn hide_if_idle(&mut self) {
+        if self.visible && self.last_moved.elapsed() >= Self::HIDE_AFTER {
+            self.image_view.setHidden(true);
+            self.visible = false;
+        }
     }
 }
