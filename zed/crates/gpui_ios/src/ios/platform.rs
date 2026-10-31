@@ -299,14 +299,20 @@ impl Platform for IosPlatform {
 
     fn prompt_for_paths(
         &self,
-        _options: PathPromptOptions,
+        options: PathPromptOptions,
     ) -> oneshot::Receiver<Result<Option<Vec<PathBuf>>>> {
         let (tx, rx) = oneshot::channel();
-        if tx
-            .send(Err(anyhow!("File picker not yet implemented for iOS")))
-            .is_err()
-        {
-            log::debug!("GPUI iOS: File picker receiver was dropped");
+        match self.presented_view_controller() {
+            Some(presenter) => super::document_picker::present(
+                &presenter,
+                options.directories,
+                options.multiple,
+                tx,
+            ),
+            None => {
+                tx.send(Err(anyhow!("no window to show the file picker over")))
+                    .ok();
+            }
         }
         rx
     }
@@ -596,3 +602,5 @@ pub fn set_phone_dimmed(dimmed: bool) {
 pub fn phone_dimmed() -> bool {
     BRIGHTNESS_BEFORE_DIMMING.with(|before| before.get().is_some())
 }
+
+pub use super::document_picker::restore_bookmarked_folders;
