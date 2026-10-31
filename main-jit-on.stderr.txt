@@ -1,0 +1,92 @@
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/Library/Developer/CoreSimulator/Devices/88E3EB36-2092-4870-A1FA-D1E80737EEEB/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/Library/Developer/CoreSimulator/Devices/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/Library/Developer/CoreSimulator/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/Library/Developer/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/Library/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/Library/Developer/CoreSimulator/Devices/88E3EB36-2092-4870-A1FA-D1E80737EEEB/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/Library/Developer/CoreSimulator/Devices/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/Library/Developer/CoreSimulator/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/Library/Developer/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/Library/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/runner/.git
+ZIOS STRICT MODE: denied (EPERM) stat outside the app sandbox: /Users/.git
+
+thread 'main' (207432) panicked at crates/util/src/util.rs:754:10:
+dev asset loading requires running from within the checkout
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+             at ./rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/std/src/panicking.rs:679:5
+   1: core::panicking::panic_fmt
+             at ./rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/core/src/panicking.rs:80:14
+   2: core::panicking::panic_display::<&str>
+             at ./rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/core/src/panicking.rs:259:5
+   3: core::option::expect_failed
+             at ./rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/core/src/option.rs:2260:5
+   4: <core::option::Option<&std::path::Path>>::expect
+             at ./Users/runner/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/option.rs:969:21
+   5: util::__fs_embed_get
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/util/src/util.rs:754:10
+   6: <settings::SettingsAssets>::get
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/util/src/util.rs:814:17
+   7: <settings::SettingsAssets as rust_embed::RustEmbed>::get
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/util/src/util.rs:838:17
+   8: util::asset_str::<settings::SettingsAssets>
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/util/src/util.rs:659:11
+   9: settings::default_settings
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/settings/src/settings.rs:153:5
+  10: settings::init
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/settings/src/settings.rs:147:44
+  11: zed::main::{closure#12}
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/zed/src/main.rs:538:9
+  12: <gpui::app::Application>::run::<zed::main::{closure#12}>::{closure#0}
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/gpui/src/app.rs:290:13
+  13: <<gpui::app::Application>::run<zed::main::{closure#12}>::{closure#0} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}
+             at ./Users/runner/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs:250:5
+  14: <alloc::boxed::Box<dyn core::ops::function::FnOnce<(), Output = ()>> as core::ops::function::FnOnce<()>>::call_once
+             at ./Users/runner/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/alloc/src/boxed.rs:2319:9
+  15: <gpui_ios::ios::application::IosApplicationState>::finish_launching
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/gpui_ios/src/ios/application.rs:223:13
+  16: <gpui_ios::ios::application::SceneDelegate>::will_connect
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/gpui_ios/src/ios/application.rs:426:25
+  17: +[UIScene _sceneForFBSScene:create:withSession:connectionOptions:]
+  18: -[UIApplication _connectUISceneFromFBSScene:transitionContext:]
+  19: -[UIApplication workspace:didCreateScene:withTransitionContext:completion:]
+  20: -[UIApplicationSceneClientAgent scene:didInitializeWithEvent:completion:]
+  21: ___95-[FBSScene _callOutQueue_didCreateWithTransitionContext:alternativeCreationCallout:completion:]_block_invoke
+  22: -[FBSScene _callOutQueue_maybeCoalesceClientSettingsUpdates:]
+  23: -[FBSScene _callOutQueue_didCreateWithTransitionContext:alternativeCreationCallout:completion:]
+  24: ___93-[FBSWorkspaceScenesClient _callOutQueue_sendDidCreateForScene:transitionContext:completion:]_block_invoke.281
+  25: -[FBSWorkspace _calloutQueue_executeCalloutFromSource:withBlock:]
+  26: -[FBSWorkspaceScenesClient _callOutQueue_sendDidCreateForScene:transitionContext:completion:]
+  27: ___92-[FBSWorkspaceScenesClient createSceneWithIdentity:parameters:transitionContext:completion:]_block_invoke_2
+  28: -[FBSWorkspace _calloutQueue_executeCalloutFromSource:withBlock:]
+  29: __dispatch_client_callout
+  30: __dispatch_block_invoke_direct
+  31: ___BSSERVICEMAINRUNLOOPQUEUE_IS_CALLING_OUT_TO_A_BLOCK__
+  32: _BSServiceMainRunLoopSourceHandler
+  33: ___CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION__
+  34: ___CFRunLoopDoSource0
+  35: ___CFRunLoopDoSources0
+  36: ___CFRunLoopRun
+  37: __CFRunLoopRunSpecificWithOptions
+  38: _GSEventRunModal
+  39: -[UIApplication _run]
+  40: _UIApplicationMain
+  41: <objc2_ui_kit::generated::__UIApplication::UIApplication>::__main
+             at ./Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/objc2-ui-kit-0.3.2/src/generated/UIApplication.rs:1561:18
+  42: <objc2_ui_kit::generated::__UIApplication::UIApplication>::main
+             at ./Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/objc2-ui-kit-0.3.2/src/application.rs:103:29
+  43: gpui_ios::ios::application::run
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/gpui_ios/src/ios/application.rs:107:5
+  44: <gpui_ios::ios::platform::IosPlatform as gpui::platform::Platform>::run
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/gpui_ios/src/ios/platform.rs:201:9
+  45: <gpui::app::Application>::run::<zed::main::{closure#12}>
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/gpui/src/app.rs:284:18
+  46: zed::main
+             at ./Users/runner/work/ZiOS/ZiOS/zed/crates/zed/src/main.rs:520:9
+  47: <fn() as core::ops::function::FnOnce<()>>::call_once
+             at ./Users/runner/.rustup/toolchains/1.98.1-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs:250:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+fatal runtime error: failed to initiate panic, error 3, aborting
