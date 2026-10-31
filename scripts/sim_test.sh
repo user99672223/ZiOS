@@ -73,6 +73,10 @@ xcrun simctl status_bar "$device" override --time 9:41 --batteryState charged --
     --cellularBars 4 --wifiBars 3 || true
 xcrun simctl install "$device" "$app"
 container="$(xcrun simctl get_app_container "$device" "$bundle_id" data)"
+log "warming up the Simulator with a first launch"
+with_timeout 300 xcrun simctl launch "$device" "$bundle_id" > /dev/null || echo "warm-up launch did not finish"
+sleep 5
+xcrun simctl terminate "$device" "$bundle_id" > /dev/null 2>&1 || true
 logs="$container/Library/Logs/Zed"
 echo "data container: $container"
 
@@ -96,9 +100,10 @@ launch() {
     for assignment in "$@"; do environment+=("SIMCTL_CHILD_$assignment"); done
     (
         export "${environment[@]}"
-        with_timeout 120 xcrun simctl launch --terminate-running-process \
+        # The first launch on a freshly booted Simulator can take minutes.
+        with_timeout 300 xcrun simctl launch --terminate-running-process \
             --stdout="$output/$name.stdout.txt" --stderr="$output/$name.stderr.txt" \
-            "$device" "$bundle_id"
+            "$device" "$bundle_id" || echo "launch-failed"
     ) | awk '{print $NF}'
 }
 

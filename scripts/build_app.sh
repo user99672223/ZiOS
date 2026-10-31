@@ -113,6 +113,28 @@ printf 'APPL????' > "$app/PkgInfo"
 if [[ -d "$repository_root/resources/bundle" ]]; then
     cp -R "$repository_root/resources/bundle/." "$app/"
 fi
+# ios_system's command dictionaries must sit at the bundle root.
+cp "$repository_root"/ios/App/Resources/*.plist "$app/"
+
+# Embed each prebuilt xcframework's slice for this platform. Only binaries that
+# link ios_system need them, but command frameworks are loaded at run time.
+if otool -L "$app/ZiOS" 2>/dev/null | grep -q "ios_system.framework"; then
+    for xcframework in "$repository_root"/ios/Frameworks/*.xcframework; do
+        [[ -d "$xcframework" ]] || continue
+        slice=""
+        for candidate in "$xcframework"/ios-arm64*; do
+            if [[ "$platform" == sim && "$candidate" == *simulator* ]] ||
+                [[ "$platform" == device && "$candidate" != *simulator* ]]; then
+                slice="$candidate"
+            fi
+        done
+        if [[ -z "$slice" ]]; then
+            echo "no $platform slice in $(basename "$xcframework")" >&2
+            exit 1
+        fi
+        cp -R "$slice"/*.framework "$app/Frameworks/"
+    done
+fi
 
 if [[ "$platform" == sim && "$strict" == 1 ]]; then
     if [[ ! -f "$strict_dylib_directory/libzios_strict.dylib" ]]; then

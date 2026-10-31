@@ -57,6 +57,13 @@ jobs:
         with:
           cache-key: simulator-${{ matrix.app }}
           targets: aarch64-apple-ios-sim
+      - name: Cache ios_system frameworks
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ios/Frameworks
+          key: ios-frameworks-${{ hashFiles('scripts/fetch_ios_system.sh') }}
+      - name: Fetch ios_system frameworks
+        run: scripts/fetch_ios_system.sh
       - name: Build for the Simulator (strict mode)
         run: scripts/build_app.sh sim --package ${{ matrix.package }} --bin ${{ matrix.bin }}
       - name: Strict Simulator test pass (JIT forced off, then on)
@@ -99,6 +106,13 @@ jobs:
         with:
           cache-key: device
           targets: aarch64-apple-ios
+      - name: Cache ios_system frameworks
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ios/Frameworks
+          key: ios-frameworks-${{ hashFiles('scripts/fetch_ios_system.sh') }}
+      - name: Fetch ios_system frameworks
+        run: scripts/fetch_ios_system.sh
       - name: Build Zed ZiOS.ipa (ios-release profile)
         run: scripts/build_app.sh device --package zed --bin zed
       - name: Upload unsigned .ipa

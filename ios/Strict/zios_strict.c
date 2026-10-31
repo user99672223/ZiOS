@@ -1,15 +1,17 @@
 // Strict Simulator mode interposer (CLAUDE.md section 12a).
 //
 // Linked into Simulator builds only. dyld applies the __DATA,__interpose tuples
-// below to every image, so any attempt to start a process, or to touch the host
+// below to every image. Any attempt to start a process, or to write to the host
 // file system outside the simulated device, aborts with a clear message and a
-// backtrace, exactly where a real iPhone would fail.
+// backtrace. Reads and probes outside the sandbox fail with EPERM, as the
+// device sandbox makes them fail.
 //
 // Environment:
 //   ZIOS_STRICT_SANDBOX=abort|warn|off   (default abort)
 //   ZIOS_STRICT_ALLOWED_ROOTS=/a:/b      extra allowed roots (user-picked folders)
 
 #include <dirent.h>
+#include <errno.h>
 #include <dlfcn.h>
 #include <execinfo.h>
 #include <fcntl.h>
@@ -235,34 +237,41 @@ static int zios_is_debug_info_lookup(const char *path, int writes) {
     return strstr(path, ".dSYM/") != NULL;
 }
 
-static void zios_check_path_mode(const char *operation, const char *path, void *caller, int writes);
+// Returns 1 when the call must fail with EPERM, as the device sandbox makes it.
+// Reads and metadata probes outside the sandbox are denied, which the app must
+// cope with (on a device they fail the same way); writes outside it abort,
+// because no correct code path writes there.
+static int zios_check_path_mode(const char *operation, const char *path, void *caller, int writes);
 
-static void zios_check_path(const char *operation, const char *path, void *caller) {
-    zios_check_path_mode(operation, path, caller, 0);
+static int zios_check_path(const char *operation, const char *path, void *caller) {
+    return zios_check_path_mode(operation, path, caller, 0);
 }
 
-static void zios_check_path_mode(const char *operation, const char *path, void *caller, int writes) {
-    if (zios_is_debug_info_lookup(path, writes)) return;
-    if (zios_reporting || zios_checking) return;
+static int zios_check_path_mode(const char *operation, const char *path, void *caller, int writes) {
+    if (zios_is_debug_info_lookup(path, writes)) return 0;
+    if (zios_reporting || zios_checking) return 0;
     zios_checking = 1;
     pthread_once(&zios_sandbox_once, zios_sandbox_init);
     int forbidden = zios_mode != ZIOS_SANDBOX_OFF && zios_path_is_forbidden(path);
     zios_checking = 0;
-    if (!forbidden) return;
+    if (!forbidden) return 0;
     char detail[1200];
     snprintf(detail, sizeof detail, "%s outside the app sandbox: %s", operation, path);
-    if (zios_mode == ZIOS_SANDBOX_WARN) {
-        zios_reporting = 1;
-        zios_write_report("sandbox", detail, caller);
-        zios_reporting = 0;
-        return;
+    if (writes && zios_mode == ZIOS_SANDBOX_ABORT) {
+        zios_violation("sandbox", detail, caller);
     }
-    zios_violation("sandbox", detail, caller);
+    zios_reporting = 1;
+    fprintf(stderr, "ZIOS STRICT MODE: denied (EPERM) %s\n", detail);
+    zios_reporting = 0;
+    return zios_mode == ZIOS_SANDBOX_WARN ? 0 : 1;
 }
 
 static int zios_open(const char *path, int flags, ...) {
-    zios_check_path_mode("open", path, __builtin_return_address(0),
-                         (flags & (O_WRONLY | O_RDWR | O_CREAT | O_TRUNC)) != 0);
+    if (zios_check_path_mode("open", path, __builtin_return_address(0),
+                             (flags & (O_WRONLY | O_RDWR | O_CREAT | O_TRUNC)) != 0)) {
+        errno = EPERM;
+        return -1;
+    }
     mode_t mode = 0;
     if (flags & O_CREAT) {
         va_list arguments;
@@ -275,8 +284,11 @@ static int zios_open(const char *path, int flags, ...) {
 ZIOS_INTERPOSE(zios_open, open);
 
 static int zios_openat(int directory, const char *path, int flags, ...) {
-    zios_check_path_mode("openat", path, __builtin_return_address(0),
-                         (flags & (O_WRONLY | O_RDWR | O_CREAT | O_TRUNC)) != 0);
+    if (zios_check_path_mode("openat", path, __builtin_return_address(0),
+                             (flags & (O_WRONLY | O_RDWR | O_CREAT | O_TRUNC)) != 0)) {
+        errno = EPERM;
+        return -1;
+    }
     mode_t mode = 0;
     if (flags & O_CREAT) {
         va_list arguments;
@@ -289,44 +301,65 @@ static int zios_openat(int directory, const char *path, int flags, ...) {
 ZIOS_INTERPOSE(zios_openat, openat);
 
 static int zios_stat(const char *path, struct stat *buffer) {
-    zios_check_path("stat", path, __builtin_return_address(0));
+    if (zios_check_path("stat", path, __builtin_return_address(0))) {
+        errno = EPERM;
+        return -1;
+    }
     return stat(path, buffer);
 }
 ZIOS_INTERPOSE(zios_stat, stat);
 
 static int zios_lstat(const char *path, struct stat *buffer) {
-    zios_check_path("lstat", path, __builtin_return_address(0));
+    if (zios_check_path("lstat", path, __builtin_return_address(0))) {
+        errno = EPERM;
+        return -1;
+    }
     return lstat(path, buffer);
 }
 ZIOS_INTERPOSE(zios_lstat, lstat);
 
 static int zios_access(const char *path, int mode) {
-    zios_check_path("access", path, __builtin_return_address(0));
+    if (zios_check_path("access", path, __builtin_return_address(0))) {
+        errno = EPERM;
+        return -1;
+    }
     return access(path, mode);
 }
 ZIOS_INTERPOSE(zios_access, access);
 
 static DIR *zios_opendir(const char *path) {
-    zios_check_path("opendir", path, __builtin_return_address(0));
+    if (zios_check_path("opendir", path, __builtin_return_address(0))) {
+        errno = EPERM;
+        return NULL;
+    }
     return opendir(path);
 }
 ZIOS_INTERPOSE(zios_opendir, opendir);
 
 static int zios_mkdir(const char *path, mode_t mode) {
-    zios_check_path_mode("mkdir", path, __builtin_return_address(0), 1);
+    if (zios_check_path_mode("mkdir", path, __builtin_return_address(0), 1)) {
+        errno = EPERM;
+        return -1;
+    }
     return mkdir(path, mode);
 }
 ZIOS_INTERPOSE(zios_mkdir, mkdir);
 
 static int zios_unlink(const char *path) {
-    zios_check_path_mode("unlink", path, __builtin_return_address(0), 1);
+    if (zios_check_path_mode("unlink", path, __builtin_return_address(0), 1)) {
+        errno = EPERM;
+        return -1;
+    }
     return unlink(path);
 }
 ZIOS_INTERPOSE(zios_unlink, unlink);
 
 static int zios_rename(const char *from, const char *to) {
-    zios_check_path_mode("rename", from, __builtin_return_address(0), 1);
-    zios_check_path_mode("rename", to, __builtin_return_address(0), 1);
+    if (zios_check_path_mode("rename", from, __builtin_return_address(0), 1) ||
+        zios_check_path_mode("rename", to, __builtin_return_address(0), 1)) {
+        errno = EPERM;
+        return -1;
+    }
     return rename(from, to);
 }
 ZIOS_INTERPOSE(zios_rename, rename);

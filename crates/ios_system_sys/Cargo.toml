@@ -1,0 +1,13 @@
+[package]
+name = "ios_system_sys"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+workspace = "../../zed"
+
+[lib]
+path = "src/ios_system_sys.rs"
+doctest = false
+
+[dependencies]
+libc.workspace = true

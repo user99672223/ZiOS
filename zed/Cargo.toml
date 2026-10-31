@@ -4,6 +4,7 @@ members = [
     # ZiOS crates live outside the Zed tree; see docs/DECISIONS.md.
     "../crates/inproc",
     "../crates/ios_bridge",
+    "../crates/ios_system_sys",
     "../crates/lanmouse_rx",
     "../crates/zed_ios",
     "../crates/zios_app",
@@ -527,6 +528,7 @@ zlog = { path = "crates/zlog" }
 # ZiOS
 inproc = { path = "../crates/inproc" }
 ios_bridge = { path = "../crates/ios_bridge" }
+ios_system_sys = { path = "../crates/ios_system_sys" }
 lanmouse_rx = { path = "../crates/lanmouse_rx" }
 zed_ios = { path = "../crates/zed_ios" }
 zlog_settings = { path = "crates/zlog_settings" }

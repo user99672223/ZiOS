@@ -41,6 +41,11 @@ fn main() {
         println!("cargo:rustc-link-arg=-Wl,-weak_framework,ScreenCaptureKit");
     }
 
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("ios") {
+        // ios_system and its command frameworks are embedded in the app bundle.
+        println!("cargo:rustc-link-arg=-Wl,-rpath,@executable_path/Frameworks");
+    }
+
     // Populate git sha environment variable if git is available
     println!("cargo:rerun-if-changed=../../.git/logs/HEAD");
     println!(

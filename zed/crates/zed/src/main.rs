@@ -100,6 +100,9 @@ mod ios {
             ios_bridge::strict::interposer_loaded()
         );
         ios_bridge::jit::start_monitor(strict.force_jit, std::time::Duration::from_secs(5));
+        // Shell commands for the terminal and in-process tools (CLAUDE.md §7).
+        ios_system_sys::initialize();
+        log::info!("ios_system available: {}", ios_system_sys::AVAILABLE);
         if let Some(cap) = strict.memory_cap_mb {
             ios_bridge::memory::start_watchdog(
                 cap * 1024 * 1024,

@@ -170,3 +170,50 @@ iOS glue that needs GPUI and the workspace (CI script runner now; status panel
 and display companion later). Kept outside `/zed` so upstream merges stay small.
 The CI runner opens folders into the existing window because iOS shows a single
 window.
+
+### Strict mode: reads outside the sandbox fail with EPERM instead of aborting
+CI showed Zed's `util::dev_repo_root` probing (`stat`) for `.git` in the
+executable's ancestors. On a device the sandbox denies such probes and Zed
+handles the error. Strict mode now matches that: reads and metadata probes
+outside the sandbox return `EPERM` (logged to stderr), while writes outside it
+still abort with a report. Process creation always aborts.
+
+## Phase 5: External display
+- External display scenes use the `UIWindowSceneSessionRoleExternalDisplayNonInteractive`
+  role. The editor's single `UIWindow` is moved between scenes
+  (`setWindowScene`), so GPUI state is untouched; the `CADisplayLink` is
+  recreated from the hosting screen so frames follow its refresh rate.
+- UI scale on the monitor: GPUI's scale factor becomes `screen.scale × ui_scale`
+  and the logical size shrinks accordingly, so the drawable stays native. Auto
+  picks 2× for monitors of 2000+ points of height, otherwise 1×.
+- The Simulator's external display is driven through Simulator.app's
+  I/O > External Displays menu with AppleScript, because `simctl` has no
+  command for it. If the runner disallows UI scripting the step reports
+  SKIPPED rather than failing.
+
+## Phase 6: lan-mouse
+- lan-mouse v0.11.0 (`0d2190e7`). `listen.rs`, `crypto.rs`, and the protocol
+  (`lan-mouse-proto/src/lib.rs`) are copied verbatim into `crates/lanmouse_rx`;
+  `input-event` is a git dependency with default features off. The proto crate
+  is vendored because its manifest enables `input-event`'s Linux-only `libei`
+  feature, which pulls `reis` and does not build for iOS.
+- Transport: DTLS 1.2 over UDP port 4242 with mutual certificate
+  authentication, exactly as the laptop expects. The iPhone shows its own
+  certificate fingerprint and lists unknown laptops for one-tap authorization
+  in the Device Status panel.
+- Scroll sign conventions differ between lan-mouse capture backends; the
+  translator assumes the Wayland convention and has an `invert_scroll` switch.
+- The pointer is drawn as a UIKit `UIImageView` overlay with SF Symbols that
+  follow GPUI's cursor style, instead of inside GPUI's scene: moving a layer
+  needs no GPUI frame, which keeps pointer latency independent of rendering.
+
+## Phase 7: In-process programs
+- `crates/inproc` runs registered programs on threads with private pipe
+  stdio, environment, and working directory; panics become exit status 101,
+  and `kill` is cooperative (threads cannot be killed).
+- Zed's single process-spawning chokepoint, `util::command`, gets an iOS
+  backend (`command/ios.rs`) with the macOS backend's exact builder API, so no
+  call site changes. Unregistered programs fail with `NotFound`.
+- ios_system v3.0.7 frameworks are downloaded by `scripts/fetch_ios_system.sh`
+  with the checksums from its `Package.swift`, and commands it knows run
+  through it when no Rust program is registered under the name.

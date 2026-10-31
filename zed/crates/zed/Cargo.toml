@@ -243,6 +243,7 @@ nix = { workspace = true, features = ["user"] }
 
 [target.'cfg(target_os = "ios")'.dependencies]
 ios_bridge.workspace = true
+ios_system_sys.workspace = true
 zed_ios.workspace = true
 
 [target.'cfg(target_os = "windows")'.dependencies]

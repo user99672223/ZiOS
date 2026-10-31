@@ -1,5 +1,5 @@
 use std::ffi::OsStr;
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "ios")))]
 use std::path::Path;
 
 #[cfg(target_os = "macos")]
@@ -7,6 +7,12 @@ mod darwin;
 
 #[cfg(target_os = "macos")]
 pub use darwin::{Child, Command, Stdio};
+
+#[cfg(target_os = "ios")]
+mod ios;
+
+#[cfg(target_os = "ios")]
+pub use ios::{Child, Command, Stdio};
 
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x0800_0000_u32;
@@ -17,17 +23,17 @@ pub fn new_command(program: impl AsRef<OsStr>) -> Command {
     Command::new(program)
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "ios")))]
 pub type Child = smol::process::Child;
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "ios")))]
 pub use std::process::Stdio;
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "ios")))]
 #[derive(Debug)]
 pub struct Command(smol::process::Command);
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "ios")))]
 impl Command {
     #[inline]
     pub fn new(program: impl AsRef<OsStr>) -> Self {

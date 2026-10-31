@@ -10,3 +10,10 @@ path = "src/inproc.rs"
 doctest = false
 
 [dependencies]
+futures.workspace = true
+log.workspace = true
+parking_lot.workspace = true
+libc.workspace = true
+
+[target.'cfg(target_os = "ios")'.dependencies]
+ios_system_sys.workspace = true

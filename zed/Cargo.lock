@@ -9105,6 +9105,13 @@ dependencies = [
 [[package]]
 name = "inproc"
 version = "0.1.0"
+dependencies = [
+ "futures 0.3.34",
+ "ios_system_sys",
+ "libc",
+ "log",
+ "parking_lot",
+]
 
 [[package]]
 name = "input-event"
@@ -9234,6 +9241,13 @@ dependencies = [
  "parking_lot",
  "tempfile",
  "zlog",
+]
+
+[[package]]
+name = "ios_system_sys"
+version = "0.1.0"
+dependencies = [
+ "libc",
 ]
 
 [[package]]
@@ -20040,6 +20054,7 @@ dependencies = [
  "futures-lite 2.6.1",
  "globset",
  "gpui_util",
+ "inproc",
  "itertools 0.14.0",
  "libc",
  "log",
@@ -23153,6 +23168,7 @@ dependencies = [
  "inspector_ui",
  "install_cli",
  "ios_bridge",
+ "ios_system_sys",
  "itertools 0.14.0",
  "journal",
  "json_schema_store",
